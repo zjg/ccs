@@ -1,0 +1,5 @@
+include_rules
+
+: foreach *.cxx |> !srcToObj |>
+: *.o |> !objsToBin |> ccs
+

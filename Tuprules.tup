@@ -1,0 +1,11 @@
+
+.gitignore
+
+CXXFLAGS = -Wall
+CXXFLAGS += -I/usr/include/QtCore
+
+LDFLAGS = -L/usr/lib/llvm -lclang
+LDFLAGS += -lQtCore
+
+!srcToObj = |> g++ $(CXXFLAGS) -c -o %o %f |> %B.o
+!objsToBin = |> g++ $(LDFLAGS) -o %o %f |>
