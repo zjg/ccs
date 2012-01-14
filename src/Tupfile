@@ -1,5 +1,7 @@
 include_rules
 
+CXXFLAGS += -IclangLib
+
 : foreach *.cxx |> !srcToObj |>
-: *.o |> !objsToBin |> ccs
+: *.o clangLib/clangLib.a |> !objsToBin |> ccs
 
