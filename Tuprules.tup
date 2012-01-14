@@ -6,7 +6,9 @@ CXXFLAGS = -Wall -g
 LDFLAGS = -L/usr/lib/llvm -lclang
 LDFLAGS += -lQtCore
 
-!srcToObj = |> g++ $(CXXFLAGS) -c -o %o %f |> %B.o
-!objsToBin = |> g++ $(LDFLAGS) -o %o %f |>
+CXX = g++
+
+!srcToObj = |> $(CXX) $(CXXFLAGS) -c -o %o %f |> %B.o
+!objsToBin = |> $(CXX) $(LDFLAGS) -o %o %f |>
 !objsToAr = |> ar crs %o %f |>
 
