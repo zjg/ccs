@@ -6,7 +6,7 @@ extern "C" {
    #include <clang-c/Index.h>
 }
 
-#include <QString>
+#include <QtCore/QString>
 
 class ClangString : public QString
 {

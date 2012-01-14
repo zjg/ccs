@@ -2,7 +2,6 @@
 .gitignore
 
 CXXFLAGS = -Wall -g
-CXXFLAGS += -I/usr/include/QtCore
 
 LDFLAGS = -L/usr/lib/llvm -lclang
 LDFLAGS += -lQtCore
