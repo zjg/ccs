@@ -1,14 +1,22 @@
 
 .gitignore
 
-CXXFLAGS = -Wall -g
+CXX = g++
+LD = $(CXX)
+
+CXXFLAGS = -Wall -g -I.
+
+ifeq ($(CXX),clang++)
+   CXXFLAGS += -x c++
+   CXXFLAGS += -I/usr/include/c++/4.4.6
+   CXXFLAGS += -I/usr/include/c++/4.4.6/i686-redhat-linux
+   CXXFLAGS += -I/usr/include/c++/4.4.6/backward
+endif
 
 LDFLAGS = -L/usr/lib/llvm -lclang
 LDFLAGS += -lQtCore
 
-CXX = g++
-
-!srcToObj = |> $(CXX) $(CXXFLAGS) -c -o %o %f |> %B.o
-!objsToBin = |> $(CXX) $(LDFLAGS) -o %o %f |>
-!objsToAr = |> ar crs %o %f |>
+!cc = |> ^ CC %f^ $(CXX) $(CXXFLAGS) -c -o %o %f |> %B.o
+!ld = |> ^ LD %o^ $(LD) $(LDFLAGS) -o %o %f |>
+!ar = |> ^ AR %f^ ar crs %o %f |>
 

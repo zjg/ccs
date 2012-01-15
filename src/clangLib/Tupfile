@@ -1,6 +1,4 @@
 include_rules
 
-CXXFLAGS += -I.
-
-: foreach *.cxx |> !srcToObj |>
-: *.o |> !objsToAr |> clangLib.a
+: foreach *.cxx |> !cc |>
+: *.o |> !ar |> clangLib.a
