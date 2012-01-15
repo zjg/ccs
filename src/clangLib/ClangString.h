@@ -2,9 +2,7 @@
 #ifndef CLANGSTRING_H
 #define CLANGSTRING_H
 
-extern "C" {
-   #include <clang-c/Index.h>
-}
+#include <clang-c/Index.h>
 
 #include <QtCore/QString>
 
@@ -15,6 +13,8 @@ public:
    virtual ~ClangString();
 
 private:
+   Q_DISABLE_COPY(ClangString);
+   
    const CXString cxString_;
 };
 

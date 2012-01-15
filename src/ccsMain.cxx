@@ -1,11 +1,11 @@
 
-extern "C" {
-   #include <clang-c/Index.h>
-}
-
-#include <ClangString.h>
+#include <clang-c/Index.h>
 
 #include <Qt/QtCore>
+
+#include <ClangIndex.h>
+#include <ClangString.h>
+#include <ClangTranslationUnit.h>
 
 int main(int argc, char* argv[])
 {
@@ -14,8 +14,7 @@ int main(int argc, char* argv[])
    ClangString version(clang_getClangVersion());
    qDebug("[%s]", qPrintable(version));
 
-   CXIndex index = clang_createIndex(0, 1);
-   
+   ClangIndex index;
    
    const QStringList HEADER_SUFFIXES = QStringList() << "h" << "hpp";
    const QStringList IMPL_SUFFIXES = QStringList() << "cxx" << "cpp" << "c" << "c++";
@@ -43,38 +42,18 @@ int main(int argc, char* argv[])
       }
    }
    
-   QList<QByteArray> clangArgsData;
-   QVector<const char*> clangArgs;
+   QStringList includeDirs;
    foreach (QFileInfo info, sourceFiles)
    {
-      QByteArray arg(qPrintable("-I" + info.path()));
-      if (!clangArgsData.contains(arg))
+      QString dir = info.path();
+      if (!includeDirs.contains(dir))
       {
-         clangArgsData.append(arg);
-         clangArgs.append(clangArgsData.last().constData());
+         qDebug("include dir: %s", qPrintable(dir));
+         includeDirs.append(dir);
       }
    }
    
-   // gcc headers from: `gcc -print-prog-name=cc1plus` -v
-   QStringList extraArgs = QStringList()
-      << "-I/usr/lib/gcc/i686-redhat-linux/4.4.6/../../../../include/c++/4.4.6"
-      << "-I/usr/lib/gcc/i686-redhat-linux/4.4.6/../../../../include/c++/4.4.6/i686-redhat-linux"
-      << "-I/usr/lib/gcc/i686-redhat-linux/4.4.6/../../../../include/c++/4.4.6/backward"
-      << "-I/usr/local/include"
-      << "-I/usr/lib/gcc/i686-redhat-linux/4.4.6/include"
-      << "-I/usr/include";
-   foreach (QString extraArg, extraArgs)
-   {
-      clangArgsData.append(qPrintable(extraArg));
-         clangArgs.append(clangArgsData.last().constData());
-   }
-   
-   foreach (const char* arg, clangArgs)
-   {
-      qDebug("clang arg: %s", arg);
-   }
-   
-   QList<CXTranslationUnit> transUnits;
+   QList<ClangTranslationUnit*> transUnits;
    
    foreach (QFileInfo info, sourceFiles)
    {
@@ -85,23 +64,14 @@ int main(int argc, char* argv[])
          QTime timer;
          timer.start();
          
-         transUnits.append(
-            clang_parseTranslationUnit(
-               index, qPrintable(info.filePath()),
-               clangArgs.constData(), clangArgs.size(),
-               NULL, 0, CXTranslationUnit_CacheCompletionResults));
+         transUnits.append(new ClangTranslationUnit(index, info));
+         transUnits.last()->parse(includeDirs);
          
          qDebug("   ... took %dms", timer.elapsed());
       }
    }
    
-   
-   foreach (CXTranslationUnit tu, transUnits)
-   {
-      clang_disposeTranslationUnit(tu);
-   }
-   
-   clang_disposeIndex(index);
+   qDeleteAll(transUnits);
    
    return 0;
 }
