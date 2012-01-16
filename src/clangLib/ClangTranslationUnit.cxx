@@ -22,17 +22,12 @@ ClangTranslationUnit::ClangTranslationUnit(
    ClangIndex& index, QFileInfo srcFile)
    : index_(index)
    , srcFile_(srcFile)
-   , tu_(0)
 {
 }
 
 ClangTranslationUnit::~ClangTranslationUnit()
 {
-   if (tu_)
-   {
-      clang_disposeTranslationUnit(*tu_);
-      delete tu_;
-   }
+   clang_disposeTranslationUnit(tu_);
 }
 
 QFileInfo ClangTranslationUnit::fileInfo() const
@@ -40,7 +35,7 @@ QFileInfo ClangTranslationUnit::fileInfo() const
    return srcFile_;
 }
 
-CXTranslationUnit* ClangTranslationUnit::transUnit() const
+CXTranslationUnit ClangTranslationUnit::transUnit() const
 {
    return tu_;
 }
@@ -65,10 +60,9 @@ void ClangTranslationUnit::parse(QStringList includeDirs)
       clangArgs.append(clangArgsData.last().constData());
    }
    
-   tu_ = new CXTranslationUnit(
-      clang_parseTranslationUnit(index_, qPrintable(srcFile_.filePath()),
-                                 clangArgs.constData(), clangArgs.size(),
-                                 /* unsaved files */ NULL, 0,
-                                 options));
+   tu_ = clang_parseTranslationUnit(index_, qPrintable(srcFile_.filePath()),
+                                    clangArgs.constData(), clangArgs.size(),
+                                    /* unsaved files */ NULL, 0,
+                                    options);
 }
 

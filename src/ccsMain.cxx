@@ -101,7 +101,7 @@ int main(int argc, char* argv[])
          timer.start();
          
          CXCodeCompleteResults* results =
-            clang_codeCompleteAt(*transUnits[fileInfo.filePath()]->transUnit(),
+            clang_codeCompleteAt(transUnits[fileInfo.filePath()]->transUnit(),
                                  qPrintable(completionFilename),
                                  completionLine, completionColumn,
                                  NULL, 0,
