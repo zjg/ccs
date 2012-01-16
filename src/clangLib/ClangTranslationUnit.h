@@ -7,7 +7,7 @@
 #include <QtCore/QFileInfo>
 #include <QtCore/QStringList>
 
-#include <ClangIndex.h>
+class ClangIndex;
 
 class ClangTranslationUnit
 {
@@ -15,7 +15,11 @@ public:
    explicit ClangTranslationUnit(ClangIndex& index, QFileInfo srcFile);
    virtual ~ClangTranslationUnit();
 
+   QFileInfo fileInfo() const;
+
    void parse(QStringList includeDirs);
+
+   CXTranslationUnit* transUnit() const;
 
 private: // functions
    Q_DISABLE_COPY(ClangTranslationUnit);
@@ -27,6 +31,7 @@ private: // members
    
 private: // static
    static QStringList defaultIncludeDirs_;
+   static QStringList extraClangArgs_;
 };
 
 #endif

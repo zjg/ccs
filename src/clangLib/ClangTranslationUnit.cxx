@@ -2,16 +2,21 @@
 #include <QtCore/QByteArray>
 #include <QtCore/QVector>
 
+#include <ClangIndex.h>
 #include <ClangTranslationUnit.h>
 
 // gcc headers from: `gcc -print-prog-name=cc1plus` -v
 QStringList ClangTranslationUnit::defaultIncludeDirs_ = QStringList()
+   << "/home/doug/local/include"
    << "/usr/include/c++/4.4.6"
    << "/usr/include/c++/4.4.6/i686-redhat-linux"
    << "/usr/include/c++/4.4.6/backward"
    << "/usr/local/include"
    << "/usr/lib/gcc/i686-redhat-linux/4.4.6/include"
    << "/usr/include";
+
+QStringList ClangTranslationUnit::extraClangArgs_ = QStringList()
+   << "-x" << "c++";
 
 ClangTranslationUnit::ClangTranslationUnit(
    ClangIndex& index, QFileInfo srcFile)
@@ -30,6 +35,16 @@ ClangTranslationUnit::~ClangTranslationUnit()
    }
 }
 
+QFileInfo ClangTranslationUnit::fileInfo() const
+{
+   return srcFile_;
+}
+
+CXTranslationUnit* ClangTranslationUnit::transUnit() const
+{
+   return tu_;
+}
+
 void ClangTranslationUnit::parse(QStringList includeDirs)
 {
    const unsigned options = clang_defaultEditingTranslationUnitOptions()
@@ -44,7 +59,11 @@ void ClangTranslationUnit::parse(QStringList includeDirs)
       clangArgs.append(clangArgsData.last().constData());
    }
    
-   // extraArgs << "-x" << "c++";   // clang ignores this???
+   foreach (QString extraArg, extraClangArgs_)
+   {
+      clangArgsData.append(QByteArray(qPrintable(extraArg)));
+      clangArgs.append(clangArgsData.last().constData());
+   }
    
    tu_ = new CXTranslationUnit(
       clang_parseTranslationUnit(index_, qPrintable(srcFile_.filePath()),
