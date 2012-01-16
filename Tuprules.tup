@@ -4,17 +4,24 @@
 CXX = g++
 LD = $(CXX)
 
-CXXFLAGS = -Wall -g -I.
-
 ifeq ($(CXX),clang++)
-   CXXFLAGS += -x c++
+
+   CXXFLAGS += -x c++ -v
    CXXFLAGS += -I/usr/include/c++/4.4.6
    CXXFLAGS += -I/usr/include/c++/4.4.6/i686-redhat-linux
    CXXFLAGS += -I/usr/include/c++/4.4.6/backward
+   
+   # clang 3.1svn can't link stuff on my centos 6: crtbegin.o
+   LD = g++
+   
+else
 endif
 
-LDFLAGS = -L/usr/lib/llvm -lclang
-LDFLAGS += -lQtCore
+CXXFLAGS += -I/home/doug/local/include
+CXXFLAGS += -Wall -g -I.
+
+LDFLAGS += -L/home/doug/local/lib
+LDFLAGS += -lclang -lQtCore
 
 !cc = |> ^ CC %f^ $(CXX) $(CXXFLAGS) -c -o %o %f |> %B.o
 !ld = |> ^ LD %o^ $(LD) $(LDFLAGS) -o %o %f |>
