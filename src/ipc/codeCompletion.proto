@@ -1,0 +1,9 @@
+
+package ccs;
+
+message CodeCompletionRequest {
+   optional string filename = 1;
+   required uint32 line = 2;
+   required uint32 column = 3;
+}
+

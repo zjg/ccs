@@ -1,7 +1,8 @@
 include_rules
 
-CXXFLAGS += -IclangLib
+LIBS += app/app.a
+LIBS += clangLib/clangLib.a
+LIBS += ipc/ipc.a
 
-: foreach *.cxx |> !cc |>
-: *.o clangLib/clangLib.a |> !ld |> ccs
+: $(LIBS) |> !ld |> ccs
 
