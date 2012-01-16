@@ -5,6 +5,7 @@ CXX = g++
 LD = $(CXX)
 AR = ar
 PROTOC = protoc
+MOC = moc-qt4
 
 ifeq ($(CXX),clang++)
 
@@ -19,13 +20,15 @@ ifeq ($(CXX),clang++)
 else
 endif
 
-CXXFLAGS += -I/home/doug/local/include
-CXXFLAGS += -Wall -g -I.
+INCLUDES += -I/home/doug/local/include
+INCLUDES += -I.
+CXXFLAGS += -Wall -g
 
 LDFLAGS += -L/home/doug/local/lib
-LDFLAGS += -lclang -lQtCore
+LDFLAGS += -lclang -lQtCore -lprotobuf
 
-!cc = |> ^ CC %f^ $(CXX) $(CXXFLAGS) -c -o %o %f |> %B.o
+!cc = |> ^ CC %f^ $(CXX) $(CXXFLAGS) $(INCLUDES) -c -o %o %f |> %B.o
 !ld = |> ^ LD %o^ $(LD) $(LDFLAGS) -o %o %f |>
 !ar = |> ^ AR %o^ rm -f %o && $(AR) crs %o %f |>
 !protoc = |> ^ PROTOC %f^ $(PROTOC) --cpp_out=. --python_out=. %f |> %B.pb.h %B.pb.cc %B_pb2.py
+!moc = |> ^ MOC %f^ $(MOC) -o%o $(INCLUDES) %f |> moc_%B.cxx

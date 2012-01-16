@@ -1,5 +1,11 @@
 include_rules
 
+MOCCABLE = CodeCompletionMessaging.h
+
 : foreach *.proto |> !protoc |> {protoh}
 : foreach *.pb.cc | {protoh} |> !cc |>
+
+: foreach $(MOCCABLE) |> !moc |> {moch}
+: foreach *.cxx | {protoh} {moch} |> !cc |>
+
 : *.o |> !ar |> ipc.a
