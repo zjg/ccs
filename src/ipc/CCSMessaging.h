@@ -8,8 +8,7 @@ class QSignalMapper;
 class QTcpServer;
 class QTcpSocket;
 
-
-typedef int ClientId;
+#include <CCSMessages.h>
 
 class CCSMessaging : public QObject
 {
@@ -22,7 +21,7 @@ public:
 public slots:
    
 signals:
-   // void requestReceived(ClientId id, ccs::CCSRequest request);
+   void requestReceived(CCSMessages::CodeCompletionRequest request);
    
 private slots:
    void handleNewConnection();
@@ -30,7 +29,7 @@ private slots:
    
 private:
    QTcpServer* server_;
-   QMap<ClientId, QTcpSocket*> clientSockets_;
+   QMap<CCSMessages::ClientId, QTcpSocket*> clientSockets_;
    QSignalMapper* socketReadMapper_;
 };
 

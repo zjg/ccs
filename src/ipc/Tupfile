@@ -1,11 +1,11 @@
 include_rules
 
-MOCCABLE = *.h
+MOCCABLE = CCSMessaging.h
 
-: foreach *.proto |> !protoc |> {protoh}
-: foreach *.pb.cc | {protoh} |> !cc |>
+: foreach *.proto |> !protoc |> {protoc_out}
+: foreach *.pb.cc | {protoc_out} |> !cc |>
 
-: foreach $(MOCCABLE) | {protoh} |> !moc |> {moch}
-: foreach *.cxx | {protoh} {moch} |> !cc |>
+: foreach $(MOCCABLE) | {protoc_out} |> !moc |> {moc_out}
+: foreach *.cxx | {protoc_out} {moc_out} |> !cc |>
 
 : *.o |> !ar |> ipc.a

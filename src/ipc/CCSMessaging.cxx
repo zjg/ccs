@@ -9,7 +9,7 @@
 
 namespace
 {
-   ClientId nextId = 1;
+   CCSMessages::ClientId nextId = 1;
 }
 
 CCSMessaging::CCSMessaging()
@@ -34,7 +34,7 @@ CCSMessaging::~CCSMessaging()
 
 void CCSMessaging::handleNewConnection()
 {
-   ClientId id = nextId++;
+   CCSMessages::ClientId id = nextId++;
    QTcpSocket* socket = server_->nextPendingConnection();
    
    clientSockets_[id] = socket;
@@ -60,6 +60,13 @@ void CCSMessaging::handleSocketReady(int id)
              request.completionrequest().filename().c_str(),
              request.completionrequest().line(),
              request.completionrequest().column());
-      // emit requestReceived(id, request);
+      
+      CCSMessages::CodeCompletionRequest completionRequest;
+      completionRequest.client = id;
+      completionRequest.filename = request.completionrequest().filename().c_str();
+      completionRequest.line = request.completionrequest().line();
+      completionRequest.column = request.completionrequest().column();
+      
+      emit requestReceived(completionRequest);
    }
 }
