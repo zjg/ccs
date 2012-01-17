@@ -13,6 +13,8 @@
 #include <ClangString.h>
 #include <ClangTranslationUnit.h>
 
+#include <CCSMessaging.h>
+
 int main(int argc, char* argv[])
 {
    clang_enableStackTraces();
@@ -118,6 +120,9 @@ int main(int argc, char* argv[])
          }
       }
    }
+   
+   CCSMessaging messaging;
+   app.exec();
    
    qDeleteAll(transUnits);
    

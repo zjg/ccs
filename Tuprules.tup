@@ -25,7 +25,8 @@ INCLUDES += -I.
 CXXFLAGS += -Wall -g
 
 LDFLAGS += -L/home/doug/local/lib
-LDFLAGS += -lclang -lQtCore -lprotobuf
+LDFLAGS += -lclang -lprotobuf
+LDFLAGS += -lQtCore -lQtNetwork
 
 !cc = |> ^ CC %f^ $(CXX) $(CXXFLAGS) $(INCLUDES) -c -o %o %f |> %B.o
 !ld = |> ^ LD %o^ $(LD) $(LDFLAGS) -o %o %f |>
