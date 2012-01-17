@@ -1,11 +1,19 @@
 
 .gitignore
 
+include local_config.tup
+
 CXX = g++
 LD = $(CXX)
 AR = ar
-PROTOC = protoc
-MOC = moc-qt4
+
+ifeq ($(MOC),)
+   MOC = $(QT_ROOT)/bin/moc
+endif
+
+ifeq ($(PROTOC),)
+   PROTOC = $(PROTOBUF_ROOT)/bin/protoc
+endif
 
 ifeq ($(CXX),clang++)
 
@@ -20,12 +28,11 @@ ifeq ($(CXX),clang++)
 else
 endif
 
-INCLUDES += -I/home/doug/local/include
 INCLUDES += -I.
 CXXFLAGS += -Wall -g
 
-LDFLAGS += -L/home/doug/local/lib
-LDFLAGS += -lclang -lprotobuf
+LDFLAGS += -lclang
+LDFLAGS += -lprotobuf
 LDFLAGS += -lQtCore -lQtNetwork
 
 !cc = |> ^ CC %f^ $(CXX) $(CXXFLAGS) $(INCLUDES) -c -o %o %f |> %B.o
