@@ -33,6 +33,8 @@ int main(int argc, char* argv[])
    const QStringList IMPL_SUFFIXES = QStringList() << "cxx" << "cpp" << "c" << "c++";
    const QStringList SRC_SUFFIXES = HEADER_SUFFIXES + IMPL_SUFFIXES;
    
+   const QStringList IGNORE_DIRS = QStringList() << "3rdparty" << ".obj";
+   
    QFileInfoList sourceFiles;
    {
       QStack<QDir> dirStack;
@@ -47,7 +49,10 @@ int main(int argc, char* argv[])
             
             if (info.isDir())
             {
-               dirStack.push(QDir(info.filePath()));
+               if (!IGNORE_DIRS.contains(info.fileName()))
+               {
+                  dirStack.push(QDir(info.filePath()));
+               }
             }
             else if (SRC_SUFFIXES.contains(info.suffix()))
             {

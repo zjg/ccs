@@ -8,11 +8,11 @@ LD = $(CXX)
 AR = ar
 
 ifeq ($(MOC),)
-   MOC = $(QT_ROOT)/bin/moc
+   MOC = moc
 endif
 
 ifeq ($(PROTOC),)
-   PROTOC = $(PROTOBUF_ROOT)/bin/protoc
+   PROTOC = protoc
 endif
 
 ifeq ($(CXX),clang++)

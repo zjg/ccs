@@ -7,13 +7,37 @@
 
 // gcc headers from: `gcc -print-prog-name=cc1plus` -v
 QStringList ClangTranslationUnit::defaultIncludeDirs_ = QStringList()
+
+   // archon
    << "/home/doug/local/include"
    << "/usr/include/c++/4.4.6"
    << "/usr/include/c++/4.4.6/i686-redhat-linux"
    << "/usr/include/c++/4.4.6/backward"
    << "/usr/local/include"
    << "/usr/lib/gcc/i686-redhat-linux/4.4.6/include"
-   << "/usr/include";
+   << "/usr/include"
+   
+   // work VM
+   << "/home/drosvick/local/include"
+   << "/home/drosvick/sw/3rdparty/qt-4.7.2/include"
+   << "/opt/gcc/gcc-4.5.3/lib/gcc/i686-pc-linux-gnu/4.5.3/../../../../include/c++/4.5.3"
+   << "/opt/gcc/gcc-4.5.3/lib/gcc/i686-pc-linux-gnu/4.5.3/../../../../include/c++/4.5.3/i686-pc-linux-gnu"
+   << "/opt/gcc/gcc-4.5.3/lib/gcc/i686-pc-linux-gnu/4.5.3/../../../../include/c++/4.5.3/backward"
+   << "/opt/gcc/gcc-4.5.3/include"
+   << "/opt/gcc/gcc-4.5.3/lib/gcc/i686-pc-linux-gnu/4.5.3/include"
+   << "/opt/gcc/gcc-4.5.3/lib/gcc/i686-pc-linux-gnu/4.5.3/include-fixed"
+   
+   // HDVSM
+   << "/home/drosvick/workspaces/HDVSMDev/sw/3rdparty/qt-4.7.2/linux/include"
+   << "/home/drosvick/workspaces/HDVSMDev/sw/3rdparty/qt-4.7.2/linux/include/QtCore"
+   << "/home/drosvick/workspaces/HDVSMDev/sw/3rdparty/qt-4.7.2/linux/include/QtNetwork"
+   << "/home/drosvick/workspaces/HDVSMDev/sw/3rdparty/qt-4.7.2/linux/include/QtGui"
+   << "/home/drosvick/workspaces/HDVSMDev/sw/3rdparty/qt-4.7.2/linux/include/QtTest"
+   << "/home/drosvick/workspaces/HDVSMDev/sw/3rdparty/qt-4.7.2/linux/include/QtXml"
+   << "/home/drosvick/workspaces/HDVSMDev/sw/3rdparty/anubis/include"
+   << "/home/drosvick/workspaces/HDVSMDev/sw/3rdparty/vcstoolkit/include"
+   << "/home/drosvick/workspaces/HDVSMDev/sw/3rdparty/sqlite-3.3.6/include"
+   ;
 
 QStringList ClangTranslationUnit::extraClangArgs_ = QStringList()
    << "-x" << "c++";
