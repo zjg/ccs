@@ -1,2 +1,3 @@
 .tup
 *.pyc
+local_config.tup
