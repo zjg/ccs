@@ -13,6 +13,10 @@
 #include <ClangString.h>
 #include <ClangTranslationUnit.h>
 
+#include <CCSMessaging.h>
+
+#include <CodeCompletionService.h>
+
 int main(int argc, char* argv[])
 {
    clang_enableStackTraces();
@@ -29,6 +33,8 @@ int main(int argc, char* argv[])
    const QStringList IMPL_SUFFIXES = QStringList() << "cxx" << "cpp" << "c" << "c++";
    const QStringList SRC_SUFFIXES = HEADER_SUFFIXES + IMPL_SUFFIXES;
    
+   const QStringList IGNORE_DIRS = QStringList() << "3rdparty" << ".obj";
+   
    QFileInfoList sourceFiles;
    {
       QStack<QDir> dirStack;
@@ -43,7 +49,10 @@ int main(int argc, char* argv[])
             
             if (info.isDir())
             {
-               dirStack.push(QDir(info.filePath()));
+               if (!IGNORE_DIRS.contains(info.fileName()))
+               {
+                  dirStack.push(QDir(info.filePath()));
+               }
             }
             else if (SRC_SUFFIXES.contains(info.suffix()))
             {
@@ -82,44 +91,16 @@ int main(int argc, char* argv[])
       }
    }
    
-   if (app.arguments().size() > 1)
    {
-      QStringList args = app.arguments();
-      QString completionFilename = args[1];
-      unsigned int completionLine = args[2].toUInt();
-      unsigned int completionColumn = args[3].toUInt();
-      
-      QFileInfo fileInfo(completionFilename);
-      if (!transUnits.contains(fileInfo.filePath()))
-      {
-         qWarning("Unable to find file '%s' for completion",
-                  qPrintable(fileInfo.filePath()));
-      }
-      else
-      {
-         QTime timer;
-         timer.start();
-         
-         CXCodeCompleteResults* results =
-            clang_codeCompleteAt(transUnits[fileInfo.filePath()]->transUnit(),
-                                 qPrintable(completionFilename),
-                                 completionLine, completionColumn,
-                                 NULL, 0,
-                                 clang_defaultCodeCompleteOptions());
-         if (results == NULL)
-         {
-            qWarning("Code completion failed");
-         }
-         else
-         {
-            qDebug("found %d completion results in %dms",
-                   results->NumResults, timer.elapsed());
-            clang_disposeCodeCompleteResults(results);
-         }
-      }
+      CCSMessaging messaging;
+      CodeCompletionService ccService(transUnits);
+      QObject::connect(&messaging, SIGNAL(requestReceived(CCSMessages::CodeCompletionRequest)),
+                       &ccService, SLOT(processRequest(CCSMessages::CodeCompletionRequest)));
+   
+      app.exec();
    }
-   
+
    qDeleteAll(transUnits);
-   
+
    return 0;
 }
