@@ -1,15 +1,24 @@
-include_rules
 
-# INCLUDES += -I../clangLib
-# INCLUDES += -I../ipc
+BIN_NAME = ccs
 
-# MOCCABLE = CodeCompletionService.h
+ifeq ($(TUP_CWD),.)
 
-# : foreach $(MOCCABLE) |> !moc |> {moc_out}
-# : foreach *.cxx | {moc_out} |> !cc |>
-# : *.o |> !ar |> app.a
+   include_rules
 
+   include $(IPC_DIR)/Tupfile
+   include clangLib/Tupfile
+   
+   MOCCABLE += CodeCompletionService.h
+   MOCCABLE += CCSMessaging.h
+   
+   : foreach $(MOCCABLE) | $(GENERATED_FILES) |> !moc |> {moc_out}
+   : foreach *.cxx | $(GENERATED_FILES) {moc_out} |> !cc |> {cc_out}
+   : {cc_out} $(STATIC_LIBS) |> !ld |> $(BIN_NAME)
 
-include $(IPC_DIR)/Tupfile
+else
 
-: $(STATIC_LIBS) |> !ar |> server.a
+   # GENERATED_FILES += 
+   INCLUDES += -I$(TUP_CWD)
+
+endif
+

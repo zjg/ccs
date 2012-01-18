@@ -1,4 +1,19 @@
-include_rules
 
-# : foreach *.cxx |> !cc |>
-# : *.o |> !ar |> clangLib.a
+LIB_NAME = clangLib.a
+STATIC_LIBS = $(TUP_CWD)/$(LIB_NAME) $(STATIC_LIBS)
+
+ifeq ($(TUP_CWD),.)
+
+   include_rules
+
+   : foreach *.cxx |> !cc |> {cc_out}
+   : {cc_out} |> !ar |> $(LIB_NAME)
+
+else
+
+   # GENERATED_FILES += 
+   INCLUDES += -I$(TUP_CWD)
+
+endif
+
+
