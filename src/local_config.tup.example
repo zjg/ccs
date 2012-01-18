@@ -1,0 +1,10 @@
+
+# local_config.tup is used for site-specific tweaks to
+# the build (non-standard include/lib paths, etc)
+
+# variables that make sense to be defined here:
+#  MOC - name of Qt's moc tool
+#  PROTOC - name of Protocol Buffer's protoc tool
+#  INCLUDES - include flags (passed to compiler & moc)
+#  LDFLAGS - link flags (passed to linker)
+

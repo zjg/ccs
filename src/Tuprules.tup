@@ -3,6 +3,9 @@
 
 include local_config.tup
 
+##############################################################################
+# tools
+
 CXX = g++
 LD = $(CXX)
 AR = ar
@@ -14,6 +17,9 @@ endif
 ifeq ($(PROTOC),)
    PROTOC = protoc
 endif
+
+##############################################################################
+# flags
 
 ifeq ($(CXX),clang++)
 
@@ -29,14 +35,24 @@ else
 endif
 
 INCLUDES += -I.
-CXXFLAGS += -Wall -g
+CXXFLAGS += -Wall -g -ansi
 
 LDFLAGS += -lclang
 LDFLAGS += -lprotobuf
+LDFLAGS += -lclucene-core
 LDFLAGS += -lQtCore -lQtNetwork
+
+##############################################################################
+# rule macros
 
 !cc = |> ^ CC %f^ $(CXX) $(CXXFLAGS) $(INCLUDES) -c -o %o %f |> %B.o
 !ld = |> ^ LD %o^ $(LD) $(LDFLAGS) -o %o %f |>
 !ar = |> ^ AR %o^ rm -f %o && $(AR) crs %o %f |>
 !protoc = |> ^ PROTOC %f^ $(PROTOC) --cpp_out=. --python_out=. %f |> %B.pb.h %B.pb.cc %B_pb2.py
 !moc = |> ^ MOC %f^ $(MOC) -o%o $(INCLUDES) %f |> moc_%B.cxx
+
+##############################################################################
+# shared subdirs
+
+IPC_DIR = $(TUP_CWD)/ipc
+

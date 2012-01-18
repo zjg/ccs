@@ -1,6 +1,8 @@
 
 #include <clang-c/Index.h>
 
+#include <CLucene.h>
+
 #include <QtCore/QCoreApplication>
 #include <QtCore/QDir>
 #include <QtCore/QFileInfo>

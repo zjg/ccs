@@ -1,0 +1,15 @@
+include_rules
+
+# INCLUDES += -I../clangLib
+# INCLUDES += -I../ipc
+
+# MOCCABLE = CodeCompletionService.h
+
+# : foreach $(MOCCABLE) |> !moc |> {moc_out}
+# : foreach *.cxx | {moc_out} |> !cc |>
+# : *.o |> !ar |> app.a
+
+
+include $(IPC_DIR)/Tupfile
+
+: $(STATIC_LIBS) |> !ar |> server.a

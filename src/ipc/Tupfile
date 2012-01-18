@@ -1,11 +1,22 @@
 include_rules
 
-MOCCABLE = CCSMessaging.h
+LIB_NAME = ipc.a
+STATIC_LIBS = $(TUP_CWD)/$(LIB_NAME) $(STATIC_LIBS)
 
-: foreach *.proto |> !protoc |> {protoc_out}
-: foreach *.pb.cc | {protoc_out} |> !cc |>
+ifeq ($(TUP_CWD),.)
 
-: foreach $(MOCCABLE) | {protoc_out} |> !moc |> {moc_out}
-: foreach *.cxx | {protoc_out} {moc_out} |> !cc |>
+   # can't generate java output, since it writes to a subdir
 
-: *.o |> !ar |> ipc.a
+   : foreach *.proto |> !protoc |> {protoc_out}
+   : foreach *.pb.cc | {protoc_out} |> !cc |>
+   : foreach *.cxx | {protoc_out} |> !cc |>
+   : *.o |> !ar |> $(LIB_NAME)
+
+else
+
+   GENERATED_FILES += $(TUP_CWD)/*.pb.h
+   # GENERATED_FILES += $(TUP_CWD)/*.py
+   # GENERATED_FILES += $(TUP_CWD)/*.java
+
+endif
+

@@ -1,8 +1,10 @@
 include_rules
 
-LIBS += app/app.a
-LIBS += clangLib/clangLib.a
-LIBS += ipc/ipc.a
 
-: $(LIBS) |> !ld |> ccs
+
+# LIBS += app/app.a
+# LIBS += clangLib/clangLib.a
+# LIBS += ipc/ipc.a
+
+# : $(LIBS) |> !ld |> ccsServer
 
