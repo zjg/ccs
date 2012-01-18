@@ -6,3 +6,10 @@ the network, such that the editor using the code-completion
 doesn't need to be the same one that is running ccs (but ccs
 should/would need to be on the same machine as the code itself).
 
+
+Dependencies:
+   - tup (latest git)
+   - llvm/clang v3.0 (or latest svn)
+   - Qt 4.6 or 4.7
+   - protocol buffers 2.4
+   - inotify-tools 3.14
