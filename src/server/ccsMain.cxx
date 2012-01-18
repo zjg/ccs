@@ -1,7 +1,7 @@
 
-#include <clang-c/Index.h>
-
 #include <CLucene.h>
+#include <clang-c/Index.h>
+#include <inotifytools/inotifytools.h>
 
 #include <QtCore/QCoreApplication>
 #include <QtCore/QDir>
@@ -16,7 +16,6 @@
 #include <ClangTranslationUnit.h>
 
 #include <CCSMessaging.h>
-
 #include <CodeCompletionService.h>
 
 int main(int argc, char* argv[])
@@ -24,9 +23,19 @@ int main(int argc, char* argv[])
    clang_enableStackTraces();
    QCoreApplication app(argc, argv);
 
-   {
+   {  // library tests
       ClangString version(clang_getClangVersion());
       qDebug("[%s]", qPrintable(version));
+      
+      qDebug("[inotifytools: max watches = %d, max instances = %d, max queue = %d]",
+             inotifytools_get_max_user_watches(),
+             inotifytools_get_max_user_instances(),
+             inotifytools_get_max_queued_events());
+      
+      qDebug("[inotifytools: init = %d]",
+             inotifytools_initialize());
+      
+      lucene::debug::LuceneBase cluceneObj;
    }
 
    ClangIndex index;
@@ -38,7 +47,7 @@ int main(int argc, char* argv[])
    const QStringList IGNORE_DIRS = QStringList() << "3rdparty" << ".obj";
    
    QFileInfoList sourceFiles;
-   {
+   {  // finding source files
       QStack<QDir> dirStack;
       dirStack.push(QDir::current());
       while (!dirStack.isEmpty())
@@ -65,7 +74,7 @@ int main(int argc, char* argv[])
    }
    
    QStringList includeDirs;
-   {
+   {  // building list of include dirs
       foreach (QFileInfo info, sourceFiles)
       {
          QString dir = info.path();
@@ -78,7 +87,7 @@ int main(int argc, char* argv[])
    }
    
    QMap<QString, ClangTranslationUnit*> transUnits;
-   {
+   {  // parsing source files
       foreach (QFileInfo info, sourceFiles)
       {
          qDebug("parsing source file: %s", qPrintable(info.filePath()));
@@ -93,7 +102,7 @@ int main(int argc, char* argv[])
       }
    }
    
-   {
+   {  // running code completion server
       CCSMessaging messaging;
       CodeCompletionService ccService(transUnits);
       QObject::connect(&messaging, SIGNAL(requestReceived(CCSMessages::CodeCompletionRequest)),
@@ -104,5 +113,6 @@ int main(int argc, char* argv[])
 
    qDeleteAll(transUnits);
 
+   inotifytools_cleanup();
    return 0;
 }

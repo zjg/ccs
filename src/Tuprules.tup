@@ -21,25 +21,13 @@ endif
 ##############################################################################
 # flags
 
-ifeq ($(CXX),clang++)
-
-   CXXFLAGS += -x c++ -v
-   CXXFLAGS += -I/usr/include/c++/4.4.6
-   CXXFLAGS += -I/usr/include/c++/4.4.6/i686-redhat-linux
-   CXXFLAGS += -I/usr/include/c++/4.4.6/backward
-   
-   # clang 3.1svn can't link stuff on my centos 6: crtbegin.o not found ?
-   LD = g++
-   
-else
-endif
-
 INCLUDES += -I.
 CXXFLAGS += -Wall -g -ansi
 
 LDFLAGS += -lclang
 LDFLAGS += -lprotobuf
 LDFLAGS += -lclucene-core
+LDFLAGS += -linotifytools
 LDFLAGS += -lQtCore -lQtNetwork
 
 ##############################################################################

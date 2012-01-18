@@ -1,5 +1,5 @@
 
-BIN_NAME = ccs
+BIN_NAME = ccsd
 
 ifeq ($(TUP_CWD),.)
 

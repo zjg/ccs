@@ -13,3 +13,4 @@ Dependencies:
    - Qt 4.6 or 4.7
    - protocol buffers 2.4
    - inotify-tools 3.14
+   - clucene (latest git)
