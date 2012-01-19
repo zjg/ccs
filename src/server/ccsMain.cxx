@@ -4,10 +4,8 @@
 #include <inotifytools/inotifytools.h>
 
 #include <QtCore/QCoreApplication>
-#include <QtCore/QDir>
 #include <QtCore/QFileInfo>
 #include <QtCore/QMap>
-#include <QtCore/QStack>
 #include <QtCore/QStringList>
 #include <QtCore/QTime>
 
@@ -17,6 +15,7 @@
 
 #include <CCSMessaging.h>
 #include <CodeCompletionService.h>
+#include <SourceFinder.h>
 
 int main(int argc, char* argv[])
 {
@@ -39,39 +38,11 @@ int main(int argc, char* argv[])
    }
 
    ClangIndex index;
-
-   const QStringList HEADER_SUFFIXES = QStringList() << "h" << "hpp";
-   const QStringList IMPL_SUFFIXES = QStringList() << "cxx" << "cpp" << "c" << "c++";
-   const QStringList SRC_SUFFIXES = HEADER_SUFFIXES + IMPL_SUFFIXES;
    
-   const QStringList IGNORE_DIRS = QStringList() << "3rdparty" << ".obj";
-   
-   QFileInfoList sourceFiles;
-   {  // finding source files
-      QStack<QDir> dirStack;
-      dirStack.push(QDir::current());
-      while (!dirStack.isEmpty())
-      {
-         QDir dir = dirStack.pop();
-         // qDebug("listing dir: %s", qPrintable(dir.path()));
-         foreach (QFileInfo info, dir.entryInfoList(QDir::AllEntries | QDir::NoDotAndDotDot))
-         {
-            // qDebug("found: %s", qPrintable(info.filePath()));
-            
-            if (info.isDir())
-            {
-               if (!IGNORE_DIRS.contains(info.fileName()))
-               {
-                  dirStack.push(QDir(info.filePath()));
-               }
-            }
-            else if (SRC_SUFFIXES.contains(info.suffix()))
-            {
-               sourceFiles.append(info);
-            }
-         }
-      }
-   }
+   SourceFinder finder;
+   finder.ignoreDirs() << "3rdparty";
+   finder.ignoreFileRegexps() << QRegExp("moc_.*");
+   QFileInfoList sourceFiles = finder.findSourceFiles(".");
    
    QStringList includeDirs;
    {  // building list of include dirs
