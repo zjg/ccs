@@ -7,4 +7,5 @@
 #  PROTOC - name of Protocol Buffer's protoc tool
 #  INCLUDES - include flags (passed to compiler & moc)
 #  LDFLAGS - link flags (passed to linker)
+#  LD_ENV - placed before the linked executable on the command line; can be used to set a custom LD_LIBRARY_PATH
 
