@@ -10,6 +10,7 @@ ifeq ($(TUP_CWD),.)
    
    MOCCABLE += CodeCompletionService.h
    MOCCABLE += CCSMessaging.h
+   MOCCABLE += FileChangeNotifier.h
    
    : foreach $(MOCCABLE) | $(GENERATED_FILES) |> !moc |> {moc_out}
    : foreach *.cxx | $(GENERATED_FILES) {moc_out} |> !cc |> {cc_out}

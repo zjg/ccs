@@ -15,6 +15,7 @@
 
 #include <CCSMessaging.h>
 #include <CodeCompletionService.h>
+#include <FileChangeNotifier.h>
 #include <SourceFinder.h>
 
 int main(int argc, char* argv[])
@@ -44,45 +45,47 @@ int main(int argc, char* argv[])
    finder.ignoreFileRegexps() << QRegExp("moc_.*");
    QFileInfoList sourceFiles = finder.findSourceFiles(".");
    
-   QStringList includeDirs;
-   {  // building list of include dirs
-      foreach (QFileInfo info, sourceFiles)
-      {
-         QString dir = info.path();
-         if (!includeDirs.contains(dir))
-         {
-            qDebug("include dir: %s", qPrintable(dir));
-            includeDirs.append(dir);
-         }
-      }
-   }
+   // QStringList includeDirs;
+   // {  // building list of include dirs
+   //    foreach (QFileInfo info, sourceFiles)
+   //    {
+   //       QString dir = info.path();
+   //       if (!includeDirs.contains(dir))
+   //       {
+   //          qDebug("include dir: %s", qPrintable(dir));
+   //          includeDirs.append(dir);
+   //       }
+   //    }
+   // }
    
-   QMap<QString, ClangTranslationUnit*> transUnits;
-   {  // parsing source files
-      foreach (QFileInfo info, sourceFiles)
-      {
-         qDebug("parsing source file: %s", qPrintable(info.filePath()));
+   // QMap<QString, ClangTranslationUnit*> transUnits;
+   // {  // parsing source files
+   //    foreach (QFileInfo info, sourceFiles)
+   //    {
+   //       qDebug("parsing source file: %s", qPrintable(info.filePath()));
          
-         QTime timer;
-         timer.start();
+   //       QTime timer;
+   //       timer.start();
          
-         transUnits[info.filePath()] = new ClangTranslationUnit(index, info);
-         transUnits[info.filePath()]->parse(includeDirs);
+   //       transUnits[info.filePath()] = new ClangTranslationUnit(index, info);
+   //       transUnits[info.filePath()]->parse(includeDirs);
          
-         qDebug("   ... took %dms", timer.elapsed());
-      }
-   }
+   //       qDebug("   ... took %dms", timer.elapsed());
+   //    }
+   // }
    
-   {  // running code completion server
-      CCSMessaging messaging;
-      CodeCompletionService ccService(transUnits);
-      QObject::connect(&messaging, SIGNAL(requestReceived(CCSMessages::CodeCompletionRequest)),
-                       &ccService, SLOT(processRequest(CCSMessages::CodeCompletionRequest)));
+   // running code completion server
+   // CCSMessaging messaging;
+   // CodeCompletionService ccService(transUnits);
+   // QObject::connect(&messaging, SIGNAL(requestReceived(CCSMessages::CodeCompletionRequest)),
+   //                  &ccService, SLOT(processRequest(CCSMessages::CodeCompletionRequest)));
    
-      app.exec();
-   }
-
-   qDeleteAll(transUnits);
+   // inotify monitoring
+   FileChangeNotifier notifier(sourceFiles);
+   
+   app.exec();
+   
+   // qDeleteAll(transUnits);
 
    inotifytools_cleanup();
    return 0;
