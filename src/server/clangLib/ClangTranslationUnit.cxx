@@ -1,12 +1,9 @@
 
-#include <QtCore/QByteArray>
-#include <QtCore/QVector>
-
 #include <ClangIndex.h>
 #include <ClangTranslationUnit.h>
 
 // gcc headers from: `gcc -print-prog-name=cc1plus` -v
-QStringList ClangTranslationUnit::defaultIncludeDirs_ = QStringList()
+const QStringList ClangTranslationUnit::defaultIncludeDirs_ = QStringList()
 
    // archon
    << "/home/doug/local/include"
@@ -39,19 +36,42 @@ QStringList ClangTranslationUnit::defaultIncludeDirs_ = QStringList()
    << "/home/drosvick/workspaces/HDVSMDev/sw/3rdparty/sqlite-3.3.6/include"
    ;
 
-QStringList ClangTranslationUnit::extraClangArgs_ = QStringList()
+const QStringList ClangTranslationUnit::extraClangArgs_ = QStringList()
    << "-x" << "c++";
 
+const unsigned ClangTranslationUnit::tuOptions_ =
+   clang_defaultEditingTranslationUnitOptions()
+   | CXTranslationUnit_CacheCompletionResults;
+
 ClangTranslationUnit::ClangTranslationUnit(
-   ClangIndex& index, QFileInfo srcFile)
+   ClangIndex& index, QFileInfo srcFile, QStringList includeDirs)
    : index_(index)
    , srcFile_(srcFile)
 {
+   foreach (QString incDir, (defaultIncludeDirs_ + includeDirs))
+   {
+      clangArgsData_.append(qPrintable("-I" + incDir));
+   }
+   foreach (QString extraArg, extraClangArgs_)
+   {
+      clangArgsData_.append(QByteArray(qPrintable(extraArg)));
+   }
+   
+   for (int i = 0; i < clangArgsData_.size(); ++i)
+   {
+      clangArgs_.append(clangArgsData_[i].constData());
+   }
 }
 
 ClangTranslationUnit::~ClangTranslationUnit()
 {
+   disposeTu();
+}
+
+void ClangTranslationUnit::disposeTu()
+{
    clang_disposeTranslationUnit(tu_);
+   tu_ = NULL;
 }
 
 QFileInfo ClangTranslationUnit::fileInfo() const
@@ -64,29 +84,76 @@ CXTranslationUnit ClangTranslationUnit::transUnit() const
    return tu_;
 }
 
-void ClangTranslationUnit::parse(QStringList includeDirs)
+void ClangTranslationUnit::parse()
 {
-   const unsigned options = clang_defaultEditingTranslationUnitOptions()
-                           | CXTranslationUnit_CacheCompletionResults;
-   
-   QList<QByteArray> clangArgsData;
-   QVector<const char*> clangArgs;
-   foreach (QString incDir, (defaultIncludeDirs_ + includeDirs))
-   {
-      QByteArray arg(qPrintable("-I" + incDir));
-      clangArgsData.append(arg);
-      clangArgs.append(clangArgsData.last().constData());
-   }
-   
-   foreach (QString extraArg, extraClangArgs_)
-   {
-      clangArgsData.append(QByteArray(qPrintable(extraArg)));
-      clangArgs.append(clangArgsData.last().constData());
-   }
-   
-   tu_ = clang_parseTranslationUnit(index_, qPrintable(srcFile_.filePath()),
-                                    clangArgs.constData(), clangArgs.size(),
+   tu_ = clang_parseTranslationUnit(index_, qPrintable(srcFile_.absoluteFilePath()),
+                                    clangArgs_.constData(), clangArgs_.size(),
                                     /* unsaved files */ NULL, 0,
-                                    options);
+                                    tuOptions_);
+   if (tu_ == NULL)
+   {
+      qDebug("Failed to parse TU from file [%s]", qPrintable(srcFile_.absoluteFilePath()));
+   }
+}
+
+void ClangTranslationUnit::update()
+{
+   if (tu_ == NULL)
+   {
+      parse();
+      return;
+   }
+   
+   int rval = clang_reparseTranslationUnit(tu_,
+                                           /* unsaved files */ 0, NULL,
+                                           tuOptions_);
+   if (rval != 0)
+   {
+      qDebug("Failed to update TU, disposing & parsing");
+      disposeTu();
+      parse();
+   }
+}
+
+void ClangTranslationUnit::loadFromFile(QFileInfo tuFile)
+{
+   if (tu_ != NULL)
+   {
+      disposeTu();
+   }
+   
+   tu_ = clang_createTranslationUnit(index_, qPrintable(tuFile.absoluteFilePath()));
+   if (tu_ == NULL)
+   {
+      qDebug("Failed to load TU from file [%s]", qPrintable(tuFile.absoluteFilePath()));
+   }
+}
+
+void ClangTranslationUnit::saveToFile(QFileInfo tuFile)
+{
+   if (tu_ == NULL)
+   {
+      return;
+   }
+   
+   int rval = clang_saveTranslationUnit(tu_, qPrintable(tuFile.absoluteFilePath()),
+                                        CXSaveTranslationUnit_None);
+   if (rval != CXSaveError_None)
+   {
+      QString msg = QString("Failed to save TU to [%1] - %2").arg(tuFile.absoluteFilePath());
+      switch (rval)
+      {
+         case CXSaveError_Unknown:
+            msg = msg.arg("I/O error");
+            break;
+         case CXSaveError_TranslationErrors:
+            msg = msg.arg("source file contained parse errors");
+            break;
+         case CXSaveError_InvalidTU:
+            msg = msg.arg("invalid TU");
+            break;
+      }
+      qDebug(qPrintable(msg));
+   }
 }
 

@@ -3,8 +3,9 @@
 #include <inotifytools/inotifytools.h>
 
 #include <QtCore/QByteArray>
-#include <QtCore/QVector>
+#include <QtCore/QSet>
 #include <QtCore/QTimer>
+#include <QtCore/QVector>
 
 #include <FileChangeNotifier.h>
 
