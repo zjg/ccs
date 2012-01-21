@@ -22,7 +22,7 @@ endif
 # flags
 
 INCLUDES += -I.
-CXXFLAGS += -Wall -g -ansi
+CXXFLAGS += -Wall -Werror -g -ansi
 
 LDFLAGS += -lclang
 LDFLAGS += -lprotobuf

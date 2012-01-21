@@ -12,5 +12,9 @@ Dependencies:
    - llvm/clang v3.0 (or latest svn)
    - Qt 4.6 or 4.7
    - protocol buffers 2.4
-   - inotify-tools 3.14
+   - inotify-tools
+      - https://github.com/zjg/inotify-tools
    - clucene (latest git)
+
+
+
