@@ -52,7 +52,7 @@ int main(int argc, char* argv[])
    //       QString dir = info.path();
    //       if (!includeDirs.contains(dir))
    //       {
-   //          qDebug("include dir: %s", qPrintable(dir));
+   //          // qDebug("include dir: %s", qPrintable(dir));
    //          includeDirs.append(dir);
    //       }
    //    }

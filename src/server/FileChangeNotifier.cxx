@@ -39,22 +39,26 @@ FileChangeNotifier::~FileChangeNotifier()
 
 void FileChangeNotifier::pollInotify()
 {
+   QSet<QString> modifiedFiles;
    inotify_event* event = inotifytools_next_event(0);
    while (event)
    {
-      QString filename = event->name;
-      QString otherFilename = inotifytools_filename_from_wd(event->wd);
+      QString filename = inotifytools_filename_from_wd(event->wd);
       QString eventType = inotifytools_event_to_str(event->mask);
-      qDebug("inotify event: %s [%s] was %s",
-             qPrintable(filename),
-             qPrintable(otherFilename),
-             qPrintable(eventType));
+      qDebug("inotify event: %s - %s",
+             qPrintable(filename), qPrintable(eventType));
+      
+      if (IN_MODIFY & event->mask)
+      {
+         modifiedFiles.insert(filename);
+      }
       
       event = inotifytools_next_event(0);
    }
    
-   // build a queue of the events, then emit them all at the end
-   // (don't want to block on whatever slots might do while in the
-   // inotify-reading loop)
+   foreach (QString filename, modifiedFiles)
+   {
+      emit fileChanged(QFileInfo(filename));
+   }
 }
 
