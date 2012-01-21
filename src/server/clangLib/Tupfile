@@ -6,8 +6,8 @@ ifeq ($(TUP_CWD),.)
 
    include_rules
 
-   : foreach *.cxx |> !cc |> {cc_out}
-   : {cc_out} |> !ar |> $(LIB_NAME)
+   : foreach *.cxx |> !cxx |> {cxx_out}
+   : {cxx_out} |> !ar |> $(LIB_NAME)
 
 else
 

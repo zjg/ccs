@@ -9,9 +9,9 @@ ifeq ($(TUP_CWD),.)
    # can't generate java output, since it writes to a subdir :(
 
    : foreach *.proto |> !protoc |> {protoc_out}
-   : foreach *.pb.cc | {protoc_out} |> !cc |> {cc_out}
-   : foreach *.cxx | {protoc_out} |> !cc |> {cc_out}
-   : {cc_out} |> !ar |> $(LIB_NAME)
+   : foreach *.pb.cc | {protoc_out} |> !cxx |> {cxx_out}
+   : foreach *.cxx | {protoc_out} |> !cxx |> {cxx_out}
+   : {cxx_out} |> !ar |> $(LIB_NAME)
 
 else
 

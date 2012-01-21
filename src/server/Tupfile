@@ -13,8 +13,8 @@ ifeq ($(TUP_CWD),.)
    MOCCABLE += FileChangeNotifier.h
    
    : foreach $(MOCCABLE) | $(GENERATED_FILES) |> !moc |> {moc_out}
-   : foreach *.cxx | $(GENERATED_FILES) {moc_out} |> !cc |> {cc_out}
-   : {cc_out} $(STATIC_LIBS) |> !ld |> $(BIN_NAME)
+   : foreach *.cxx | $(GENERATED_FILES) {moc_out} |> !cxx |> {cxx_out}
+   : {cxx_out} $(STATIC_LIBS) |> !ld |> $(BIN_NAME)
 
 else
 
