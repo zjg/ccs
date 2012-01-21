@@ -3,12 +3,13 @@
 
 #include <QtCore/QTime>
 
-#include <ClangTranslationUnit.h>
-#include <CodeCompletionService.h>
+#include "ClangTranslationUnit.h"
+#include "TranslationUnitManager.h"
+#include "CodeCompletionService.h"
 
 CodeCompletionService::CodeCompletionService(
-   const QMap<QString, ClangTranslationUnit*>& transUnits)
-   : transUnits_(transUnits)
+   TranslationUnitManager& tuManager)
+   : tuManager_(tuManager)
 {
 }
 
@@ -19,11 +20,10 @@ CodeCompletionService::~CodeCompletionService()
 void CodeCompletionService::processRequest(
    CCSMessages::CodeCompletionRequest request)
 {
-   QFileInfo fileInfo(request.filename);
-   if (!transUnits_.contains(fileInfo.filePath()))
+   ClangTranslationUnit* tu = tuManager_.translationUnit(request.filename);
+   if (tu == NULL)
    {
-      qWarning("Unable to find file '%s' for completion",
-               qPrintable(fileInfo.filePath()));
+      qDebug("unable to get TU for [%s]", qPrintable(request.filename));
       return;
    }
    
@@ -31,10 +31,10 @@ void CodeCompletionService::processRequest(
    timer.start();
    
    CXCodeCompleteResults* results =
-      clang_codeCompleteAt(transUnits_[fileInfo.filePath()]->transUnit(),
+      clang_codeCompleteAt(*tu,
                            qPrintable(request.filename),
                            request.line, request.column,
-                           NULL, 0,
+                           /* unsaved files */ NULL, 0,
                            clang_defaultCodeCompleteOptions());
    if (results == NULL)
    {

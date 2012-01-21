@@ -3,9 +3,9 @@
 #include <QtNetwork/QTcpServer>
 #include <QtNetwork/QTcpSocket>
 
-#include <ccs.pb.h>
+#include "ccs.pb.h"
 
-#include <CCSMessaging.h>
+#include "CCSMessaging.h"
 
 namespace
 {

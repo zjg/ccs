@@ -15,18 +15,18 @@ class ClangTranslationUnit
 {
 public:
    explicit ClangTranslationUnit(ClangIndex& index,
-                                 QFileInfo srcFile,
+                                 QString srcFile,
                                  QStringList includeDirs);
    virtual ~ClangTranslationUnit();
 
-   QFileInfo fileInfo() const;
-   CXTranslationUnit transUnit() const;
+   QString sourceFile() const;
+   operator CXTranslationUnit() const;
 
    void parse();
    void update();
    
-   void loadFromFile(QFileInfo tuFile);
-   void saveToFile(QFileInfo tuFile);
+   void loadFromFile(QString tuFile);
+   void saveToFile(QString tuFile);
 
 private: // functions
    Q_DISABLE_COPY(ClangTranslationUnit);
@@ -35,7 +35,7 @@ private: // functions
 
 private: // members
    ClangIndex& index_;
-   QFileInfo srcFile_;
+   QString srcFile_;
    CXTranslationUnit tu_;
    
    QList<QByteArray> clangArgsData_;

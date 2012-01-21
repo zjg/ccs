@@ -4,24 +4,27 @@
 
 #include <QtCore/QByteArray>
 #include <QtCore/QSet>
+#include <QtCore/QStringList>
 #include <QtCore/QTimer>
 #include <QtCore/QVector>
 
+#include <QtCore/QtDebug>
+
 #include <FileChangeNotifier.h>
 
-FileChangeNotifier::FileChangeNotifier(QFileInfoList filesToWatch)
+FileChangeNotifier::FileChangeNotifier(QStringList filesToWatch)
 {
    QList<QByteArray> filenames;
    QVector<const char*> inotifyFilenames;
-   foreach (QFileInfo info, filesToWatch)
+   foreach (QString info, filesToWatch)
    {
-      filenames.append(qPrintable(info.absoluteFilePath()));
+      filenames.append(qPrintable(info));
       inotifyFilenames.append(filenames.last().constData());
    }
    inotifyFilenames.append(0);
    
    int rval = inotifytools_watch_files(inotifyFilenames.data(),
-                                       IN_CLOSE | IN_MODIFY | IN_DELETE);
+                                       IN_MODIFY | IN_DELETE);
    if (rval == 0)
    {
       qDebug("inotifytools_watch_files returned error %d",
@@ -59,7 +62,8 @@ void FileChangeNotifier::pollInotify()
    
    foreach (QString filename, modifiedFiles)
    {
-      emit fileChanged(QFileInfo(filename));
+      qDebug("emitting fileChanged [%s]", qPrintable(filename));
+      emit fileChanged(filename);
    }
 }
 

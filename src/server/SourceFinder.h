@@ -1,7 +1,6 @@
 #ifndef SOURCEFINDER_H
 #define SOURCEFINDER_H
 
-#include <QtCore/QFileInfo>
 #include <QtCore/QRegExp>
 #include <QtCore/QStringList>
 
@@ -14,7 +13,7 @@ public: // functions
    QStringList& ignoreDirs();
    QList<QRegExp>& ignoreFileRegexps();
 
-   QFileInfoList findSourceFiles(QString startingDir);
+   QStringList findSourceFiles(QString startingDir);
 
 private: // functions
 

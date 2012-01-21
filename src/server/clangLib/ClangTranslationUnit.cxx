@@ -1,6 +1,8 @@
 
-#include <ClangIndex.h>
-#include <ClangTranslationUnit.h>
+#include <QtCore/QTime>
+
+#include "ClangIndex.h"
+#include "ClangTranslationUnit.h"
 
 // gcc headers from: `gcc -print-prog-name=cc1plus` -v
 const QStringList ClangTranslationUnit::defaultIncludeDirs_ = QStringList()
@@ -44,9 +46,10 @@ const unsigned ClangTranslationUnit::tuOptions_ =
    | CXTranslationUnit_CacheCompletionResults;
 
 ClangTranslationUnit::ClangTranslationUnit(
-   ClangIndex& index, QFileInfo srcFile, QStringList includeDirs)
+   ClangIndex& index, QString srcFile, QStringList includeDirs)
    : index_(index)
    , srcFile_(srcFile)
+   , tu_(NULL)
 {
    foreach (QString incDir, (defaultIncludeDirs_ + includeDirs))
    {
@@ -74,35 +77,44 @@ void ClangTranslationUnit::disposeTu()
    tu_ = NULL;
 }
 
-QFileInfo ClangTranslationUnit::fileInfo() const
+QString ClangTranslationUnit::sourceFile() const
 {
    return srcFile_;
 }
 
-CXTranslationUnit ClangTranslationUnit::transUnit() const
+ClangTranslationUnit::operator CXTranslationUnit() const
 {
    return tu_;
 }
 
 void ClangTranslationUnit::parse()
 {
-   tu_ = clang_parseTranslationUnit(index_, qPrintable(srcFile_.absoluteFilePath()),
+   QTime timer;
+   timer.start();
+   
+   tu_ = clang_parseTranslationUnit(index_, qPrintable(srcFile_),
                                     clangArgs_.constData(), clangArgs_.size(),
                                     /* unsaved files */ NULL, 0,
                                     tuOptions_);
    if (tu_ == NULL)
    {
-      qDebug("Failed to parse TU from file [%s]", qPrintable(srcFile_.absoluteFilePath()));
+      qDebug("Failed to parse TU from file [%s]", qPrintable(srcFile_));
    }
+   
+   qDebug("   parsed [%s] in %dms", qPrintable(srcFile_), timer.elapsed());
 }
 
 void ClangTranslationUnit::update()
 {
    if (tu_ == NULL)
    {
+      qDebug("   -- attempt to update NULL tu_, parsing");
       parse();
       return;
    }
+   
+   QTime timer;
+   timer.start();
    
    int rval = clang_reparseTranslationUnit(tu_,
                                            /* unsaved files */ 0, NULL,
@@ -112,35 +124,48 @@ void ClangTranslationUnit::update()
       qDebug("Failed to update TU, disposing & parsing");
       disposeTu();
       parse();
-   }
-}
-
-void ClangTranslationUnit::loadFromFile(QFileInfo tuFile)
-{
-   if (tu_ != NULL)
-   {
-      disposeTu();
-   }
-   
-   tu_ = clang_createTranslationUnit(index_, qPrintable(tuFile.absoluteFilePath()));
-   if (tu_ == NULL)
-   {
-      qDebug("Failed to load TU from file [%s]", qPrintable(tuFile.absoluteFilePath()));
-   }
-}
-
-void ClangTranslationUnit::saveToFile(QFileInfo tuFile)
-{
-   if (tu_ == NULL)
-   {
       return;
    }
    
-   int rval = clang_saveTranslationUnit(tu_, qPrintable(tuFile.absoluteFilePath()),
+   qDebug("   reparsed [%s] in %dms", qPrintable(srcFile_), timer.elapsed());
+}
+
+void ClangTranslationUnit::loadFromFile(QString tuFile)
+{
+   if (tu_ != NULL)
+   {
+      qDebug("   -- loading with existing tu_, disposing");
+      disposeTu();
+   }
+   
+   QTime timer;
+   timer.start();
+   
+   tu_ = clang_createTranslationUnit(index_, qPrintable(tuFile));
+   if (tu_ == NULL)
+   {
+      qDebug("Failed to load TU from file [%s]", qPrintable(tuFile));
+   }
+   
+   qDebug("   loaded [%s] in %dms", qPrintable(srcFile_), timer.elapsed());
+}
+
+void ClangTranslationUnit::saveToFile(QString tuFile)
+{
+   if (tu_ == NULL)
+   {
+      qDebug("   -- attempt to save NULL tu_, doing nothing");
+      return;
+   }
+   
+   QTime timer;
+   timer.start();
+   
+   int rval = clang_saveTranslationUnit(tu_, qPrintable(tuFile),
                                         CXSaveTranslationUnit_None);
    if (rval != CXSaveError_None)
    {
-      QString msg = QString("Failed to save TU to [%1] - %2").arg(tuFile.absoluteFilePath());
+      QString msg = QString("Failed to save TU to [%1] - %2").arg(tuFile);
       switch (rval)
       {
          case CXSaveError_Unknown:
@@ -155,5 +180,7 @@ void ClangTranslationUnit::saveToFile(QFileInfo tuFile)
       }
       qDebug(qPrintable(msg));
    }
+      
+   qDebug("   saved [%s] in %dms", qPrintable(srcFile_), timer.elapsed());
 }
 

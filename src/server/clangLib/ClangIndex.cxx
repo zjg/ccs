@@ -1,5 +1,5 @@
 
-#include <ClangIndex.h>
+#include "ClangIndex.h"
 
 ClangIndex::ClangIndex()
 {

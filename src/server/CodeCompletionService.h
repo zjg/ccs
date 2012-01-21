@@ -2,27 +2,24 @@
 #ifndef CODECOMPLETIONSERVICE_H
 #define CODECOMPLETIONSERVICE_H
 
-#include <QtCore/QMap>
 #include <QtCore/QObject>
-#include <QtCore/QString>
 
-#include <CCSMessages.h>
-class ClangTranslationUnit;
+#include "CCSMessages.h"
+class TranslationUnitManager;
 
 class CodeCompletionService : public QObject
 {
    Q_OBJECT
 
 public:
-   explicit CodeCompletionService(
-      const QMap<QString, ClangTranslationUnit*>& transUnits);
+   explicit CodeCompletionService(TranslationUnitManager& tuManager);
    virtual ~CodeCompletionService();
    
 public slots:
    void processRequest(CCSMessages::CodeCompletionRequest request);
    
 private:
-   const QMap<QString, ClangTranslationUnit*> transUnits_;
+   TranslationUnitManager& tuManager_;
 };
 
 #endif

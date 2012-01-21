@@ -8,9 +8,10 @@ ifeq ($(TUP_CWD),.)
    include $(IPC_DIR)/Tupfile
    include clangLib/Tupfile
    
-   MOCCABLE += CodeCompletionService.h
    MOCCABLE += CCSMessaging.h
+   MOCCABLE += CodeCompletionService.h
    MOCCABLE += FileChangeNotifier.h
+   MOCCABLE += TranslationUnitManager.h
    
    : foreach $(MOCCABLE) | $(GENERATED_FILES) |> !moc |> {moc_out}
    : foreach *.cxx | $(GENERATED_FILES) {moc_out} |> !cxx |> {cxx_out}

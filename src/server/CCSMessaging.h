@@ -8,7 +8,7 @@ class QSignalMapper;
 class QTcpServer;
 class QTcpSocket;
 
-#include <CCSMessages.h>
+#include "CCSMessages.h"
 
 class CCSMessaging : public QObject
 {

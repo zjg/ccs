@@ -1,7 +1,6 @@
 #ifndef FILECHANGENOTIFIER_H
 #define FILECHANGENOTIFIER_H
 
-#include <QtCore/QFileInfo>
 #include <QtCore/QObject>
 
 class QTimer;
@@ -11,11 +10,11 @@ class FileChangeNotifier : public QObject
    Q_OBJECT
    
 public:
-   explicit FileChangeNotifier(QFileInfoList filesToWatch);
+   explicit FileChangeNotifier(QStringList filesToWatch);
    virtual ~FileChangeNotifier();
    
 signals:
-   void fileChanged(QFileInfo file);
+   void fileChanged(QString file);
    
 private slots:
    void pollInotify();

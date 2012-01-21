@@ -3,7 +3,7 @@
 #include <QtCore/QStack>
 #include <QtCore/QTime>
 
-#include <SourceFinder.h>
+#include "SourceFinder.h"
 
 SourceFinder::SourceFinder()
 {
@@ -25,9 +25,9 @@ QList<QRegExp>& SourceFinder::ignoreFileRegexps()
    return ignoreFileRegexps_;
 }
 
-QFileInfoList SourceFinder::findSourceFiles(QString startingDir)
+QStringList SourceFinder::findSourceFiles(QString startingDir)
 {
-   QFileInfoList foundFiles;
+   QStringList foundFiles;
    QStack<QDir> dirStack;
    QList<QDir> processedDirs;
    
@@ -59,7 +59,7 @@ QFileInfoList SourceFinder::findSourceFiles(QString startingDir)
          }
          if (!ignore)
          {
-            foundFiles.append(info);
+            foundFiles.append(info.absoluteFilePath());
          }
       }
       

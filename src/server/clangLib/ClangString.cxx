@@ -1,5 +1,5 @@
 
-#include <ClangString.h>
+#include "ClangString.h"
 
 ClangString::ClangString(CXString string)
    : QString(clang_getCString(string))
