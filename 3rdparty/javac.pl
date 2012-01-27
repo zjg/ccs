@@ -2,7 +2,7 @@
 # Parameters that this script accepts
 # -c "javac options"       javac options
 # -j "jar options"         jar options
-# -s "source dir1 dir2"    source dirs separated by space
+# -s "source dir1 dir2"    source dirs or files separated by space
 # -r "resource dir1 dir2"  resource dirs separated by space
 # -o outputfile.jar        output file
 # -d "dep1.jar dep2.jar"   dependency jar files
@@ -35,20 +35,31 @@ sub copy_recursively {
 }
 
 sub find_java_files {
-  my($dir, $files_ref) = @_;
-  opendir my($dh), $dir or die "Could not open dir '$dir': $!";
-  for my $entry (readdir $dh) {
-    next if $entry eq ".." or $entry eq ".";
-    my $child = "$dir/$entry";
-    if (-d $child) {
-      find_java_files($child, \@$files_ref);
-    } else {
-      if ($entry =~ /\.java$/) {
-        push(@$files_ref, $child);
-      }
-    }
+  my($inputs, $files_ref) = @_;
+
+  for my $in (split ' ', $inputs) {
+     if (-f $in) {
+        push(@$files_ref, $in);
+     }
+     elsif (-d $in) {
+        opendir my($dh), $in or die "Could not open dir '$in': $!";
+        for my $entry (readdir $dh) {
+          next if $entry eq ".." or $entry eq ".";
+          my $child = "$in/$entry";
+          if (-d $child) {
+            find_java_files($child, \@$files_ref);
+          } else {
+            if ($entry =~ /\.java$/) {
+              push(@$files_ref, $child);
+            }
+          }
+        }
+        closedir $dh;
+     }
+     else {
+        die "Source '$in' is neither file nor directory";
+     }
   }
-  closedir $dh;
 }
 
 sub split_text {
@@ -63,8 +74,8 @@ sub split_text {
 our($opt_o, $opt_c, $opt_j, $opt_s, $opt_r, $opt_d, $opt_h);
 getopt('cjosrdh');
 
-die "Specify source directory with -s" if !$opt_s;
-die "Specify output file with -o" if !$opt_o;
+die "Specify source directories or files with -s" if !$opt_s;
+die "Specify output jar file with -o" if !$opt_o;
 
 my ($javac_path, $jar_path);
 unless (!$opt_h) {

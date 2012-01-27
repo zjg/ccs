@@ -2,22 +2,28 @@
 LIB_NAME = ipc.a
 STATIC_LIBS = $(TUP_CWD)/$(LIB_NAME) $(STATIC_LIBS)
 
+JAR_NAME = ccs-ipc.jar
+
 ifeq ($(TUP_CWD),.)
 
    include_rules
 
-   # can't generate java output, since it writes to a subdir :(
-
+   # protoc
    : foreach *.proto |> !protoc |> {protoc_out}
+
+   # cxx
    : foreach *.pb.cc | {protoc_out} |> !cxx |> {cxx_out}
    : foreach *.cxx | {protoc_out} |> !cxx |> {cxx_out}
    : {cxx_out} |> !ar |> $(LIB_NAME)
+
+   # java
+   JAVA_DEPS += $(PROTOBUF_JAR)
+   : *.java | {protoc_out} |> !javac |> $(JAR_NAME)
 
 else
 
    GENERATED_FILES += $(TUP_CWD)/*.pb.h
    # GENERATED_FILES += $(TUP_CWD)/*.py
-   GENERATED_FILES += $(TUP_CWD)/*.java
    INCLUDES += -I$(TUP_CWD)
 
 endif
