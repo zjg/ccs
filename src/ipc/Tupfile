@@ -17,7 +17,7 @@ else
 
    GENERATED_FILES += $(TUP_CWD)/*.pb.h
    # GENERATED_FILES += $(TUP_CWD)/*.py
-   # GENERATED_FILES += $(TUP_CWD)/*.java
+   GENERATED_FILES += $(TUP_CWD)/*.java
    INCLUDES += -I$(TUP_CWD)
 
 endif

@@ -9,6 +9,7 @@ include local_config.tup
 CXX = g++
 LD = $(CXX)
 AR = ar
+JAVAC = javac
 
 ifeq ($(MOC),)
    MOC = moc
@@ -36,8 +37,15 @@ LDFLAGS += -lQtCore -lQtNetwork
 !cxx = |> ^ CXX %f^ $(CXX) $(CXXFLAGS) $(INCLUDES) -c -o %o %f |> %B.o
 !ld = |> ^ LD %o^ $(LD_ENV) $(LD) $(LDFLAGS) -o %o %f |>
 !ar = |> ^ AR %o^ rm -f %o && $(AR) crs %o %f |>
-!protoc = |> ^ PROTOC %f^ $(PROTOC) --cpp_out=. --python_out=. %f |> %B.pb.h %B.pb.cc %B_pb2.py
 !moc = |> ^ MOC %f^ $(MOC) -o%o $(INCLUDES) %f |> moc_%B.cxx
+
+# Note: in order for the Java protocol buffer generation to work correctly
+# with tup, you need to put the following in your .proto file:
+#    option java_package = "";
+#    option java_outer_classname = "<filename_wihtout_extension>";
+# This ensures that the generated file is placed in the same directory,
+# and that it has the same filename (sans extension) as the .proto file.
+!protoc = |> ^ PROTOC %f^ $(PROTOC) --cpp_out=. --python_out=. --java_out=. %f |> %B.pb.h %B.pb.cc %B_pb2.py %B.java
 
 ##############################################################################
 # shared subdirs

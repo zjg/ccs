@@ -1,6 +1,10 @@
 
 package ccs;
 
+// following java options needed to work correctly with tup
+option java_package = "";              // needs to be blank
+option java_outer_classname = "ccs";   // should match the filename (minus extension)
+
 message CodeCompletionRequest {
    required string filename = 1;
    required uint32 line = 2;
