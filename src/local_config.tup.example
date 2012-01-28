@@ -1,11 +1,18 @@
-
+#
 # local_config.tup is used for site-specific tweaks to
-# the build (non-standard include/lib paths, etc)
-
-# variables that make sense to be defined here:
-#  MOC - name of Qt's moc tool
-#  PROTOC - name of Protocol Buffer's protoc tool
-#  INCLUDES - include flags (passed to compiler & moc)
-#  LDFLAGS - link flags (passed to linker)
-#  LD_ENV - placed before the linked executable on the command line; can be used to set a custom LD_LIBRARY_PATH
-
+# the build (non-standard tool/include/lib paths, etc)
+#
+# Tools:
+#  MOC - path/name of Qt's moc tool
+#  PROTOC - path/name of Protocol Buffer's protoc tool
+#  JAVA_HOME - Java installation (ie- $(JAVA_HOME)/bin/javac)
+#  JAR - name of Java 'jar' tool (some systems have 'gjar')
+#
+# Includes/Libraries:
+#  PKG_CONFIG_PATH - extra paths for pkg-config (colon-separated)
+# note : the following variables likely don't need to be used, since
+#        the paths you would put in them should get picked up by pkg-config
+#  INCLUDES - include flags (passed to compiler & Qt's moc)
+#  CXXFLAGS - compiler flags
+#  LDFLAGS - link flags
+#

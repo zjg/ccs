@@ -13,13 +13,14 @@ AR = ar
 ifeq ($(MOC),)
    MOC = moc
 endif
-
 ifeq ($(PROTOC),)
    PROTOC = protoc
 endif
-
 ifeq ($(JAVA_HOME),)
    JAVA_HOME = /usr
+endif
+ifeq ($(JAR),)
+   JAR = jar
 endif
 
 # helper script by Anatol Pomozov, from:
@@ -29,14 +30,20 @@ JAVAC_PL = $(TUP_CWD)/../3rdparty/javac.pl
 ##############################################################################
 # flags
 
+PKGCONFIG_CMD = PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) pkg-config
+PKGCONFIG_PKGS = QtCore QtNetwork protobuf libclucene-core
+
 INCLUDES += -I.
+INCLUDES += `$(PKGCONFIG_CMD) --cflags-only-I $(PKGCONFIG_PKGS)`
+
 CXXFLAGS += -Wall -Werror -g -ansi
+CXXFLAGS += `$(PKGCONFIG_CMD) --cflags-only-other $(PKGCONFIG_PKGS)`
 
 LDFLAGS += -lclang
-LDFLAGS += -lprotobuf
-LDFLAGS += -lclucene-core
 LDFLAGS += -linotifytools
-LDFLAGS += -lQtCore -lQtNetwork
+LDFLAGS += `$(PKGCONFIG_CMD) --libs $(PKGCONFIG_PKGS)`
+# not sure why this isn't grabbed by pkg-config...
+LDFLAGS += -lclucene-shared
 
 JAVAC_FLAGS +=
 JAR_FLAGS +=
@@ -46,10 +53,10 @@ JAVA_DEPS +=
 # rule macros
 
 !cxx = |> ^ CXX %f^ $(CXX) $(CXXFLAGS) $(INCLUDES) -c -o %o %f |> %B.o
-!ld = |> ^ LD %o^ $(LD_ENV) $(LD) $(LDFLAGS) -o %o %f |>
+!ld = |> ^ LD %o^ $(LD) $(LDFLAGS) -o %o %f |>
 !ar = |> ^ AR %o^ rm -f %o && $(AR) crs %o %f |>
 !moc = |> ^ MOC %f^ $(MOC) -o%o $(INCLUDES) %f |> moc_%B.cxx
-!javac = |> ^ JAVA %o^ $(JAVAC_PL) -h "$(JAVA_HOME)" -c "$(JAVAC_FLAGS)" -j "$(JAR_FLAGS)" -d "$(JAVA_DEPS)" -s "%f" -o %o |>
+!javac = |> ^ JAVA %o^ $(JAVAC_PL) -h "$(JAVA_HOME)" -c "$(JAVAC_FLAGS)" -j "$(JAR_FLAGS)" -d "$(JAVA_DEPS)" -a "$(JAR)" -s "%f" -o %o |>
 
 # Note: in order for the Java protocol buffer generation to work correctly
 # with tup, you need to put the following in your .proto file:

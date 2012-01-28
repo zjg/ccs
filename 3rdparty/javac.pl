@@ -7,6 +7,7 @@
 # -o outputfile.jar        output file
 # -d "dep1.jar dep2.jar"   dependency jar files
 # -h path                  java home dir. It is expected that javac and jar are present in $JAVA_HOME/bin
+# -a jar_name              name of the jar binary (default: 'jar') - needed because some systems have 'gjar'
 
 use strict;
 use warnings;
@@ -71,20 +72,27 @@ sub split_text {
   return split(' ', $text);
 }
 
-our($opt_o, $opt_c, $opt_j, $opt_s, $opt_r, $opt_d, $opt_h);
-getopt('cjosrdh');
+our($opt_o, $opt_c, $opt_j, $opt_s, $opt_r, $opt_d, $opt_h, $opt_a);
+getopt('cjosrdha');
 
 die "Specify source directories or files with -s" if !$opt_s;
 die "Specify output jar file with -o" if !$opt_o;
 
+my ($jar_bin);
+unless (!$opt_a) {
+   $jar_bin = $opt_a;
+} else {
+   $jar_bin = 'jar';
+}
+
 my ($javac_path, $jar_path);
 unless (!$opt_h) {
   $javac_path = $opt_h.'/bin/javac';
-  $jar_path = $opt_h.'/bin/jar';
+  $jar_path = $opt_h.'/bin/'.$jar_bin;
 } else {
   # Use binaries from path
   $javac_path = 'javac';
-  $jar_path = 'jar';
+  $jar_path = $jar_bin;
 }
 
 my @java_files = ();
