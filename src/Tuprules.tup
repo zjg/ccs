@@ -16,16 +16,20 @@ endif
 ifeq ($(PROTOC),)
    PROTOC = protoc
 endif
-ifeq ($(JAVA_HOME),)
-   JAVA_HOME = /usr
+ifeq ($(JAVAC),)
+   JAVAC = javac
 endif
 ifeq ($(JAR),)
    JAR = jar
 endif
 
-# helper script by Anatol Pomozov, from:
-# http://groups.google.com/group/tup-users/browse_thread/thread/4c39266b0c0582a7/1a80492716b96863
-JAVAC_PL = $(TUP_CWD)/../3rdparty/javac.pl
+# helper script for converting protoc -> jar
+PROTOC_TO_JAR = $(TUP_CWD)/../tools/proto_to_jar.py
+
+##############################################################################
+# other constants
+
+PROTOBUF_JAR = $(TUP_CWD)/../3rdparty/protobuf-2.4.1.jar
 
 ##############################################################################
 # flags
@@ -45,10 +49,6 @@ LDFLAGS += `$(PKGCONFIG_CMD) --libs $(PKGCONFIG_PKGS)`
 # not sure why this isn't grabbed by pkg-config...
 LDFLAGS += -lclucene-shared
 
-JAVAC_FLAGS +=
-JAR_FLAGS +=
-JAVA_DEPS +=
-
 ##############################################################################
 # rule macros
 
@@ -56,20 +56,8 @@ JAVA_DEPS +=
 !ld = |> ^ LD %o^ $(LD) $(LDFLAGS) -o %o %f |>
 !ar = |> ^ AR %o^ rm -f %o && $(AR) crs %o %f |>
 !moc = |> ^ MOC %f^ $(MOC) -o%o $(INCLUDES) %f |> moc_%B.cxx
-!javac = |> ^ JAVA %o^ $(JAVAC_PL) -h "$(JAVA_HOME)" -c "$(JAVAC_FLAGS)" -j "$(JAR_FLAGS)" -d "$(JAVA_DEPS)" -a "$(JAR)" -s "%f" -o %o |>
-
-# Note: in order for the Java protocol buffer generation to work correctly
-# with tup, you need to put the following in your .proto file:
-#    option java_package = "";
-#    option java_outer_classname = "<filename_wihtout_extension>";
-# This ensures that the generated file is placed in the same directory,
-# and that it has the same filename (sans extension) as the .proto file.
-!protoc = |> ^ PROTOC %f^ $(PROTOC) --cpp_out=. --python_out=. --java_out=. %f |> %B.pb.h %B.pb.cc %B_pb2.py %B.java
-
-##############################################################################
-# other constants
-
-PROTOBUF_JAR = $(TUP_CWD)/../3rdparty/protobuf-2.4.1.jar
+!protoc = |> ^ PROTOC %f^ $(PROTOC) --cpp_out=. --python_out=. %f |> %B.pb.h %B.pb.cc %B_pb2.py
+!protoToJar = |> ^ PROTOC-JAR %f -> %o^ $(PROTOC_TO_JAR) -c $(PROTOBUF_JAR) --protoc $(PROTOC) --javac $(JAVAC) --jar $(JAR) %f %o |>
 
 ##############################################################################
 # shared subdirs

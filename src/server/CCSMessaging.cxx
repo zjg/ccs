@@ -17,7 +17,7 @@ CCSMessaging::CCSMessaging()
    , socketReadMapper_(NULL)
 {
    server_ = new QTcpServer(this);
-   server_->listen();
+   server_->listen(QHostAddress::Any, 9515);
    qDebug("server listening on %u", server_->serverPort());
    
    connect(server_, SIGNAL(newConnection()),

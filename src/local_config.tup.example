@@ -5,8 +5,8 @@
 # Tools:
 #  MOC - path/name of Qt's moc tool
 #  PROTOC - path/name of Protocol Buffer's protoc tool
-#  JAVA_HOME - Java installation (ie- $(JAVA_HOME)/bin/javac)
-#  JAR - name of Java 'jar' tool (some systems have 'gjar')
+#  JAVAC - path/name of Java compiler 'javac'
+#  JAR - path/name of Java 'jar' tool (some systems have 'gjar')
 #
 # Includes/Libraries:
 #  PKG_CONFIG_PATH - extra paths for pkg-config (colon-separated)
