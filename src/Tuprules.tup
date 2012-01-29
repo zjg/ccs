@@ -23,8 +23,8 @@ ifeq ($(JAR),)
    JAR = jar
 endif
 
-# helper script for converting protoc -> jar
-PROTOC_TO_JAR = $(TUP_CWD)/../tools/proto_to_jar.py
+# helper script for converting proto -> jar
+PROTO_TO_JAR = $(TUP_CWD)/../tools/proto_to_jar.py
 
 ##############################################################################
 # other constants
@@ -34,19 +34,29 @@ PROTOBUF_JAR = $(TUP_CWD)/../3rdparty/protobuf-2.4.1.jar
 ##############################################################################
 # flags
 
-PKGCONFIG_CMD = PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) pkg-config
-PKGCONFIG_PKGS = QtCore QtNetwork protobuf libclucene-core
-
 INCLUDES += -I.
-INCLUDES += `$(PKGCONFIG_CMD) --cflags-only-I $(PKGCONFIG_PKGS)`
-
 CXXFLAGS += -Wall -Werror -g -ansi
-CXXFLAGS += `$(PKGCONFIG_CMD) --cflags-only-other $(PKGCONFIG_PKGS)`
 
-LDFLAGS += -lclang
-LDFLAGS += -linotifytools
+##############################################################################
+# dependencies (pkg-config)
+
+PKGCONFIG_PKGS = QtCore QtNetwork protobuf libclucene-core
+PKGCONFIG_CMD = PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) pkg-config
+
+INCLUDES += `$(PKGCONFIG_CMD) --cflags-only-I $(PKGCONFIG_PKGS)`
+CXXFLAGS += `$(PKGCONFIG_CMD) --cflags-only-other $(PKGCONFIG_PKGS)`
 LDFLAGS += `$(PKGCONFIG_CMD) --libs $(PKGCONFIG_PKGS)`
-# not sure why this isn't grabbed by pkg-config...
+
+##############################################################################
+# dependencies (that don't use pkg-config)
+
+# clang
+LDFLAGS += -lclang
+
+# inotifytools
+LDFLAGS += -linotifytools
+
+# clucene - not sure why this isn't grabbed by pkg-config...
 LDFLAGS += -lclucene-shared
 
 ##############################################################################
@@ -57,7 +67,7 @@ LDFLAGS += -lclucene-shared
 !ar = |> ^ AR %o^ rm -f %o && $(AR) crs %o %f |>
 !moc = |> ^ MOC %f^ $(MOC) -o%o $(INCLUDES) %f |> moc_%B.cxx
 !protoc = |> ^ PROTOC %f^ $(PROTOC) --cpp_out=. --python_out=. %f |> %B.pb.h %B.pb.cc %B_pb2.py
-!protoToJar = |> ^ PROTOC-JAR %f -> %o^ $(PROTOC_TO_JAR) -c $(PROTOBUF_JAR) --protoc $(PROTOC) --javac $(JAVAC) --jar $(JAR) %f %o |>
+!protoToJar = |> ^ PROTOC-JAR %o^ $(PROTO_TO_JAR) -c $(PROTOBUF_JAR) --protoc $(PROTOC) --javac $(JAVAC) --jar $(JAR) -o %o %f |>
 
 ##############################################################################
 # shared subdirs

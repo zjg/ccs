@@ -27,6 +27,8 @@ def find_files(root_dir, file_glob):
 
 def parse_args():
     parser = optparse.OptionParser(usage=usage)
+    parser.add_option('-o', '--output', dest='jarfile', default='proto.jar',
+                      help='output .jar file')
     parser.add_option('-c', '--classpath', dest='classpath',
                       help='java classpath')
     parser.add_option('--protoc', dest='protoc_bin', default='protoc',
@@ -39,12 +41,11 @@ def parse_args():
     global options, args
     (options, args) = parser.parse_args()
     
-    if len(args) != 2:
-        parser.error('incorrect number of arguments')
+    if len(args) < 1:
+        parser.error('need at least one .proto file as input')
 
 def main():
-    proto_file = os.path.abspath(args[0])
-    jar_file = os.path.abspath(args[1])
+    proto_files = [ os.path.abspath(a) for a in args ]
     
     # make temp dir & register cleanup
     tmp_dir = tempfile.mkdtemp()
@@ -53,24 +54,25 @@ def main():
     atexit.register(clean_tmp)
     
     # run protoc
-    protoc_cmd = [ options.protoc_bin,
-                   '-I' + os.path.dirname(proto_file),
-                   '--java_out=' + tmp_dir,
-                   proto_file
-                 ]
-    subprocess.call(protoc_cmd)
+    protoc_includes = [ '-I' + os.path.dirname(f) for f in proto_files ]
+    protoc_includes = list(set(protoc_includes))    # uniqify
+    protoc_cmd = [ options.protoc_bin, '--java_out=' + tmp_dir ]
+    protoc_cmd.extend(protoc_includes)
+    protoc_cmd.extend(proto_files)
+    subprocess.check_call(protoc_cmd)
     
     # compile java files
     java_files = find_files(tmp_dir, '*.java')
     javac_cmd = [ options.javac_bin, '-cp', options.classpath ]
     javac_cmd.extend(java_files)
-    subprocess.call(javac_cmd)
+    subprocess.check_call(javac_cmd)
     
     # build jar
     class_files = find_files(tmp_dir, '*.class')
-    jar_cmd = [ options.jar_bin, 'cf', jar_file ]
+    class_files = [ os.path.relpath(f, tmp_dir) for f in class_files ]
+    jar_cmd = [ options.jar_bin, 'cf', os.path.abspath(options.jarfile) ]
     jar_cmd.extend(class_files)
-    subprocess.call(jar_cmd)
+    subprocess.check_call(jar_cmd, cwd=tmp_dir)
 
 if __name__ == '__main__':
     parse_args()
