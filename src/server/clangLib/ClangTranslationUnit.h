@@ -4,10 +4,10 @@
 
 #include <clang-c/Index.h>
 
-#include <QtCore/QByteArray>
-#include <QtCore/QFileInfo>
-#include <QtCore/QStringList>
-#include <QtCore/QVector>
+#include <QByteArray>
+#include <QFileInfo>
+#include <QStringList>
+#include <QVector>
 
 class ClangIndex;
 

@@ -1,7 +1,7 @@
 
 #include <clang-c/Index.h>
 
-#include <QtCore/QTime>
+#include <QTime>
 
 #include "ClangTranslationUnit.h"
 #include "TranslationUnitManager.h"

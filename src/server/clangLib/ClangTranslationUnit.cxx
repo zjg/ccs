@@ -1,5 +1,5 @@
 
-#include <QtCore/QTime>
+#include <QTime>
 
 #include "ClangIndex.h"
 #include "ClangTranslationUnit.h"

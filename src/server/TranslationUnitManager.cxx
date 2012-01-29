@@ -1,5 +1,5 @@
 
-#include <QtCore/QDateTime>
+#include <QDateTime>
 
 #include "ClangTranslationUnit.h"
 
@@ -25,19 +25,19 @@ TranslationUnitManager::~TranslationUnitManager()
 
 ClangTranslationUnit* TranslationUnitManager::translationUnit(QString sourceFile)
 {
-   qDebug("cache before:");
-   foreach (QString name, tuCache_.keys())
-   {
-      qDebug("    [%s]", qPrintable(name));
-   }
+   // qDebug("cache before:");
+   // foreach (QString name, tuCache_.keys())
+   // {
+   //    qDebug("    [%s]", qPrintable(name));
+   // }
    
    updateTranslationUnit(sourceFile);
    
-   qDebug("cache after:");
-   foreach (QString name, tuCache_.keys())
-   {
-      qDebug("    [%s]", qPrintable(name));
-   }
+   // qDebug("cache after:");
+   // foreach (QString name, tuCache_.keys())
+   // {
+   //    qDebug("    [%s]", qPrintable(name));
+   // }
    
    QString tuFile = tuFileFromSourceFile(sourceFile);
    if (!tuCache_.contains(tuFile))
@@ -51,6 +51,13 @@ ClangTranslationUnit* TranslationUnitManager::translationUnit(QString sourceFile
 void TranslationUnitManager::updateTranslationUnit(QString sourceFile)
 {
    qDebug("updating TU for [%s]", qPrintable(sourceFile));
+   
+   QFileInfo sourceFileInfo(sourceFile);
+   if (!sourceFileInfo.exists())
+   {
+      qDebug("Source file [%s] doesn't exist", qPrintable(sourceFile));
+      return;
+   }
    
    QString tuFile = tuFileFromSourceFile(sourceFile);
    QFileInfo tuFileInfo(tuFile);
@@ -76,7 +83,6 @@ void TranslationUnitManager::updateTranslationUnit(QString sourceFile)
       tuCache_.insert(tuFile, tu);
    }
    
-   QFileInfo sourceFileInfo(sourceFile);
    tuFileInfo.refresh();
    if (sourceFileInfo.lastModified() > tuFileInfo.lastModified())
    {

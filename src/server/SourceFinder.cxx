@@ -1,7 +1,7 @@
 
-#include <QtCore/QDir>
-#include <QtCore/QStack>
-#include <QtCore/QTime>
+#include <QDir>
+#include <QStack>
+#include <QTime>
 
 #include "SourceFinder.h"
 

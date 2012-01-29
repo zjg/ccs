@@ -2,7 +2,7 @@
 #ifndef CODECOMPLETIONSERVICE_H
 #define CODECOMPLETIONSERVICE_H
 
-#include <QtCore/QObject>
+#include <QObject>
 
 #include "CCSMessages.h"
 class TranslationUnitManager;

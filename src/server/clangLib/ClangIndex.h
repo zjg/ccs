@@ -4,7 +4,7 @@
 
 #include <clang-c/Index.h>
 
-#include <QtCore/QtGlobal>
+#include <QtGlobal>
 
 class ClangIndex
 {
