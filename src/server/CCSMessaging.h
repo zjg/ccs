@@ -2,8 +2,8 @@
 #ifndef CCSMESSAGING_H
 #define CCSMESSAGING_H
 
-#include <QtCore/QObject>
-#include <QtCore/QMap>
+#include <QObject>
+#include <QMap>
 class QSignalMapper;
 class QTcpServer;
 class QTcpSocket;

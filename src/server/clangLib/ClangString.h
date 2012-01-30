@@ -4,7 +4,7 @@
 
 #include <clang-c/Index.h>
 
-#include <QtCore/QString>
+#include <QString>
 
 class ClangString : public QString
 {

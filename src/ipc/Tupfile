@@ -17,7 +17,7 @@ ifeq ($(TUP_CWD),.)
    : {cxx_out} |> !ar |> $(LIB_NAME)
 
    # java
-   : foreach *.proto |> !protoToJar |> $(JAR_NAME)
+   : *.proto |> !protoToJar |> $(JAR_NAME)
 
 else
 

@@ -2,7 +2,7 @@
 #ifndef CCSMESSAGES_H
 #define CCSMESSAGES_H
 
-#include <QtCore/QString>
+#include <QString>
 
 namespace CCSMessages
 {

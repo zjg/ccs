@@ -2,13 +2,11 @@
 #include <inotifytools/inotify.h>
 #include <inotifytools/inotifytools.h>
 
-#include <QtCore/QByteArray>
-#include <QtCore/QSet>
-#include <QtCore/QStringList>
-#include <QtCore/QTimer>
-#include <QtCore/QVector>
-
-#include <QtCore/QtDebug>
+#include <QByteArray>
+#include <QSet>
+#include <QStringList>
+#include <QTimer>
+#include <QVector>
 
 #include <FileChangeNotifier.h>
 

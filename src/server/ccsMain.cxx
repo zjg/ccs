@@ -3,9 +3,9 @@
 #include <clang-c/Index.h>
 #include <inotifytools/inotifytools.h>
 
-#include <QtCore/QCoreApplication>
-#include <QtCore/QStringList>
-#include <QtCore/QTime>
+#include <QCoreApplication>
+#include <QStringList>
+#include <QTime>
 
 #include "ClangIndex.h"
 #include "ClangString.h"

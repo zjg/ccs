@@ -2,9 +2,9 @@
 #ifndef TRANSLATIONUNITMANAGER_H
 #define TRANSLATIONUNITMANAGER_H
 
-#include <QtCore/QCache>
-#include <QtCore/QDir>
-#include <QtCore/QObject>
+#include <QCache>
+#include <QDir>
+#include <QObject>
 
 class ClangIndex;
 class ClangTranslationUnit;

@@ -1,7 +1,7 @@
 
-#include <QtCore/QSignalMapper>
-#include <QtNetwork/QTcpServer>
-#include <QtNetwork/QTcpSocket>
+#include <QSignalMapper>
+#include <QTcpServer>
+#include <QTcpSocket>
 
 #include "ccs.pb.h"
 

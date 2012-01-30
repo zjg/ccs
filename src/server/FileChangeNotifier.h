@@ -1,7 +1,7 @@
 #ifndef FILECHANGENOTIFIER_H
 #define FILECHANGENOTIFIER_H
 
-#include <QtCore/QObject>
+#include <QObject>
 
 class QTimer;
 

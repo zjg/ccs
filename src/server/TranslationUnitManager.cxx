@@ -1,5 +1,5 @@
 
-#include <QtCore/QDateTime>
+#include <QDateTime>
 
 #include "ClangTranslationUnit.h"
 

@@ -1,8 +1,8 @@
 #ifndef SOURCEFINDER_H
 #define SOURCEFINDER_H
 
-#include <QtCore/QRegExp>
-#include <QtCore/QStringList>
+#include <QRegExp>
+#include <QStringList>
 
 class SourceFinder
 {
