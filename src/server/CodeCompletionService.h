@@ -18,6 +18,9 @@ public:
 public slots:
    void processRequest(CCSMessages::CodeCompletionRequest request);
    
+signals:
+   void completionComplete(CCSMessages::CodeCompletionResponse response);
+   
 private:
    TranslationUnitManager& tuManager_;
 };

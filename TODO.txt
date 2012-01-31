@@ -1,1 +1,6 @@
 - use TU's from headers as PCH inputs to other TU parsing
+- ability to define 'projects'
+- ability to define proper include directories
+   - system dirs
+   - project dependencies
+
