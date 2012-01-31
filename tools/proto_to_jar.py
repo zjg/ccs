@@ -12,7 +12,7 @@ import tempfile
 usage = '''\
 Converts a Protocol Buffers .proto file to a Java .jar file.
 
-   %prog [options] input.proto output.jar\
+   %prog [options] input.proto [input2.proto ...]\
 '''
 
 options = None
