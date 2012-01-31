@@ -8,6 +8,10 @@ ifeq ($(TUP_CWD),.)
 
    include_rules
 
+   # thrift
+   run $(THRIFT_RULES) ccs.thrift
+   
+   
    # protoc
    : foreach *.proto |> !protoc |> {protoc_out}
 

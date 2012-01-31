@@ -26,6 +26,8 @@ endif
 # helper script for converting protoc -> jar
 PROTOC_TO_JAR = $(TUP_CWD)/../tools/proto_to_jar.py
 
+THRIFT_RULES = $(TUP_CWD)/../tools/tup_thrift_rules.py
+
 ##############################################################################
 # other constants
 
