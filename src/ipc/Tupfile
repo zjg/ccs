@@ -9,8 +9,11 @@ ifeq ($(TUP_CWD),.)
    include_rules
 
    # thrift
-   run $(THRIFT_RULES) ccs.thrift
-   
+   THRIFT_FILE = ccs.thrift
+   run $(THRIFT_RULES) \
+      --cpp_cmd "$(THRIFT_CPP_WRAPPER) $(THRIFT_FILE)" \
+      --cpp_obj_bin "{cxx_out}" \
+      $(THRIFT_FILE)
    
    # protoc
    : foreach *.proto |> !protoc |> {protoc_out}
