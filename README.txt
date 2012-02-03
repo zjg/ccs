@@ -9,6 +9,7 @@ should/would need to be on the same machine as the code itself).
 
 Dependencies:
    - tup (latest git)
+   - python 2.6 or newer
    - llvm/clang v3.0 (or latest svn)
    - Qt 4.6 or 4.7
    - thrift 0.8
