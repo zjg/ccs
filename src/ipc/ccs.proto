@@ -4,6 +4,9 @@ package ccs;
 option java_package = "org.zjg";
 option java_outer_classname = "ccs";
 
+// --------------------------------------------------------------------------
+// requests
+
 message CodeCompletionRequest {
    required string filename = 1;
    required uint32 line = 2;
@@ -13,4 +16,25 @@ message CodeCompletionRequest {
 message CCSRequest {
    optional CodeCompletionRequest completionRequest = 2;
 }
+
+
+// --------------------------------------------------------------------------
+// responses
+
+message CodeCompletionResponse {
+   optional CodeCompletionRequest request = 1;
+   
+   message CompletionResult {
+      required string text = 1;
+      optional string sourceFile = 2;
+      optional uint32 sourceLine = 3;
+   }
+   
+   repeated CompletionResult result = 2;
+}
+
+message CCSResponse {
+   optional CodeCompletionResponse completionResponse = 2;
+}
+
 

@@ -15,6 +15,9 @@ const QStringList ClangTranslationUnit::defaultIncludeDirs_ = QStringList()
    << "/usr/local/include"
    << "/usr/lib/gcc/i686-redhat-linux/4.4.6/include"
    << "/usr/include"
+   << "/usr/include/Qt"
+   << "/usr/include/QtCore"
+   << "/usr/include/QtNetwork"
    
    // work VM
    << "/home/drosvick/local/include"

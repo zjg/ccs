@@ -6,7 +6,7 @@
 #include <QMap>
 class QSignalMapper;
 class QTcpServer;
-class QTcpSocket;
+class QAbstractSocket;
 
 #include "CCSMessages.h"
 
@@ -19,7 +19,8 @@ public:
    virtual ~CCSMessaging();
    
 public slots:
-   
+   void sendResponse(CCSMessages::CodeCompletionResponse response);
+
 signals:
    void requestReceived(CCSMessages::CodeCompletionRequest request);
    
@@ -29,7 +30,7 @@ private slots:
    
 private:
    QTcpServer* server_;
-   QMap<CCSMessages::ClientId, QTcpSocket*> clientSockets_;
+   QMap<CCSMessages::ClientId, QAbstractSocket*> clientSockets_;
    QSignalMapper* socketReadMapper_;
 };
 

@@ -25,6 +25,16 @@ def main():
         
         s.send(request.SerializeToString())
         
+        response = s.recv(4096)
+        response = ccs.CCSResponse.FromString(response)
+        
+        if response.HasField('completionResponse'):
+           completionResponse = response.completionResponse
+           
+           print 'got response with %d results' % len(completionResponse.result)
+           for result in completionResponse.result:
+              print '   %s' % (result.text,)
+        
 
 
 if __name__ == '__main__':

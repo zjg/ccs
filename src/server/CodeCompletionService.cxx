@@ -3,9 +3,11 @@
 
 #include <QTime>
 
+#include "clangLib/ClangString.h"
+
 #include "ClangTranslationUnit.h"
-#include "TranslationUnitManager.h"
 #include "CodeCompletionService.h"
+#include "TranslationUnitManager.h"
 
 CodeCompletionService::CodeCompletionService(
    TranslationUnitManager& tuManager)
@@ -44,5 +46,24 @@ void CodeCompletionService::processRequest(
    
    qDebug("found %d completion results in %dms",
           results->NumResults, timer.elapsed());
+   
+   CCSMessages::CodeCompletionResponse response(request);
+   
+   for (unsigned int i = 0; i < results->NumResults; ++i)
+   {
+      const CXCompletionResult& result = results->Results[i];
+      
+      ClangString typedText(
+         clang_getCompletionChunkText(result.CompletionString,
+                                      CXCompletionChunk_TypedText));
+      
+      CCSMessages::CodeCompletionResult responseResult;
+      responseResult.text = typedText;
+      
+      response.results.append(responseResult);
+   }
+   
+   emit completionComplete(response);
+   
    clang_disposeCodeCompleteResults(results);
 }

@@ -67,6 +67,9 @@ int main(int argc, char* argv[])
    CodeCompletionService ccService(tuManager);
    QObject::connect(&messaging, SIGNAL(requestReceived(CCSMessages::CodeCompletionRequest)),
                     &ccService, SLOT(processRequest(CCSMessages::CodeCompletionRequest)));
+   QObject::connect(&ccService, SIGNAL(completionComplete(CCSMessages::CodeCompletionResponse)),
+                    &messaging, SLOT(sendResponse(CCSMessages::CodeCompletionResponse)));
+   
    
    app.exec();
    
