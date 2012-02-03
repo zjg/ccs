@@ -98,7 +98,6 @@ unless (!$opt_h) {
 my @java_files = ();
 foreach my $dir (split_text($opt_s)) {
   find_java_files($dir, \@java_files);
-#  find sub { push(@java_files, $File::Find::name) if $File::Find::name =~ /\.java$/ }, $dir;
 }
 
 die "No *.java files found" unless @java_files;
@@ -129,5 +128,4 @@ push(@jar_args, split_text($opt_j)) unless !$opt_j;
 push(@jar_args, '.');
 system(@jar_args) and exit 1;
 
-rmdir $workdir;
-
+system("rm -rf $workdir");
