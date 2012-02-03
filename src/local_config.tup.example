@@ -4,7 +4,6 @@
 #
 # Tools:
 #  MOC - path/name of Qt's moc tool
-#  PROTOC - path/name of Protocol Buffer's protoc tool
 #  JAVAC - path/name of Java compiler 'javac'
 #  JAR - path/name of Java 'jar' tool (some systems have 'gjar')
 #

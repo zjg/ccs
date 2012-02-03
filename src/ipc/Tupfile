@@ -15,22 +15,16 @@ ifeq ($(TUP_CWD),.)
       --cpp_obj_bin "{cxx_out}" \
       $(THRIFT_FILE)
    
-   # protoc
-   : foreach *.proto |> !protoc |> {protoc_out}
-
-   # cxx
-   : foreach *.pb.cc | {protoc_out} |> !cxx |> {cxx_out}
-   : foreach *.cxx | {protoc_out} |> !cxx |> {cxx_out}
+   # cxx - stuff gets compiled by the thrift rules above
    : {cxx_out} |> !ar |> $(LIB_NAME)
 
    # java
-   : *.proto |> !protoToJar |> $(JAR_NAME)
+   # -- todo
 
 else
 
-   GENERATED_FILES += $(TUP_CWD)/*.pb.h
    GENERATED_FILES += $(TUP_CWD)/*.h
-   # GENERATED_FILES += $(TUP_CWD)/*.py
+   
    INCLUDES += -I$(TUP_CWD)
 
 endif
