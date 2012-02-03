@@ -48,7 +48,7 @@ CCServer::~CCServer()
 void CCServer::CCSCobHandler::ping(std::tr1::function<void()> cob)
 {
    qDebug("ping!");
-   return cob();
+   cob();
 }
 
 void CCServer::CCSCobHandler::codeCompletion(
@@ -57,7 +57,7 @@ void CCServer::CCSCobHandler::codeCompletion(
 {
    ccs::CodeCompletionResponse response =
       server_->completionService_.process(request);
-   return cob(response);
+   cob(response);
 }
 
 
