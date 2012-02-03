@@ -29,6 +29,7 @@ ifeq ($(TUP_CWD),.)
 else
 
    GENERATED_FILES += $(TUP_CWD)/*.pb.h
+   GENERATED_FILES += $(TUP_CWD)/*.h
    # GENERATED_FILES += $(TUP_CWD)/*.py
    INCLUDES += -I$(TUP_CWD)
 

@@ -60,7 +60,7 @@ def main():
     atexit.register(clean_tmp)
     
     # run thrift
-    thrift_cmd = [ 'thrift', '--gen', 'cpp',
+    thrift_cmd = [ 'thrift', '--gen', 'cpp:cob_style',
                    '--out', tmp_dir,
                    thrift_file
                  ]

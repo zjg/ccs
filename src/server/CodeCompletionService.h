@@ -2,21 +2,18 @@
 #ifndef CODECOMPLETIONSERVICE_H
 #define CODECOMPLETIONSERVICE_H
 
-#include <QObject>
+#include "ccs_types.h"
 
-#include "CCSMessages.h"
+#include "I_CodeCompletionService.h"
 class TranslationUnitManager;
 
-class CodeCompletionService : public QObject
+class CodeCompletionService : public I_CodeCompletionService
 {
-   Q_OBJECT
-
 public:
    explicit CodeCompletionService(TranslationUnitManager& tuManager);
    virtual ~CodeCompletionService();
    
-public slots:
-   void processRequest(CCSMessages::CodeCompletionRequest request);
+   virtual ccs::CodeCompletionResponse process(const ccs::CodeCompletionRequest& request);
    
 private:
    TranslationUnitManager& tuManager_;

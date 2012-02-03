@@ -11,11 +11,11 @@
 #include "ClangString.h"
 #include "ClangTranslationUnit.h"
 
-#include "CCSMessaging.h"
+#include "CCServer.h"
 #include "CodeCompletionService.h"
-#include "TranslationUnitManager.h"
 #include "FileChangeNotifier.h"
 #include "SourceFinder.h"
+#include "TranslationUnitManager.h"
 
 int main(int argc, char* argv[])
 {
@@ -63,10 +63,9 @@ int main(int argc, char* argv[])
    QObject::connect(&notifier, SIGNAL(fileChanged(QString)),
                     &tuManager, SLOT(updateTranslationUnit(QString)));
    
-   CCSMessaging messaging;
    CodeCompletionService ccService(tuManager);
-   QObject::connect(&messaging, SIGNAL(requestReceived(CCSMessages::CodeCompletionRequest)),
-                    &ccService, SLOT(processRequest(CCSMessages::CodeCompletionRequest)));
+   
+   CCServer server(ccService);
    
    app.exec();
    

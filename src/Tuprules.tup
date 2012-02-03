@@ -24,6 +24,7 @@ ifeq ($(JAR),)
 endif
 
 TOOLS_DIR = $(TUP_CWD)/../tools
+THIRD_PARTY_DIR = $(TUP_CWD)/../3rdparty
 
 # helper script for converting protoc -> jar
 PROTOC_TO_JAR = $(TOOLS_DIR)/proto_to_jar.py
@@ -35,7 +36,7 @@ THRIFT_CPP_WRAPPER = $(TOOLS_DIR)/thrift_cpp_wrapper.py
 ##############################################################################
 # other constants
 
-PROTOBUF_JAR = $(TUP_CWD)/../3rdparty/protobuf-2.4.1.jar
+PROTOBUF_JAR = $(THIRD_PARTY_DIR)/protobuf-2.4.1.jar
 
 ##############################################################################
 # flags
