@@ -19,14 +19,14 @@ CodeCompletionService::~CodeCompletionService()
 {
 }
 
-void CodeCompletionService::processRequest(
-   CCSMessages::CodeCompletionRequest request)
+ccs::CodeCompletionResponse CodeCompletionService::process(
+   const ccs::CodeCompletionRequest& request)
 {
-   ClangTranslationUnit* tu = tuManager_.translationUnit(request.filename);
+   ClangTranslationUnit* tu = tuManager_.translationUnit(request.filename.c_str());
    if (tu == NULL)
    {
-      qDebug("unable to get TU for [%s]", qPrintable(request.filename));
-      return;
+      qDebug("unable to get TU for [%s]", request.filename.c_str());
+      return ccs::CodeCompletionResponse();
    }
    
    QTime timer;
@@ -34,20 +34,21 @@ void CodeCompletionService::processRequest(
    
    CXCodeCompleteResults* results =
       clang_codeCompleteAt(*tu,
-                           qPrintable(request.filename),
+                           request.filename.c_str(),
                            request.line, request.column,
                            /* unsaved files */ NULL, 0,
                            clang_defaultCodeCompleteOptions());
    if (results == NULL)
    {
       qWarning("Code completion failed");
-      return;
+      return ccs::CodeCompletionResponse();
    }
    
    qDebug("found %d completion results in %dms",
           results->NumResults, timer.elapsed());
    
-   CCSMessages::CodeCompletionResponse response(request);
+   ccs::CodeCompletionResponse response;
+   response.request = request;
    
    for (unsigned int i = 0; i < results->NumResults; ++i)
    {
@@ -57,13 +58,10 @@ void CodeCompletionService::processRequest(
          clang_getCompletionChunkText(result.CompletionString,
                                       CXCompletionChunk_TypedText));
       
-      CCSMessages::CodeCompletionResult responseResult;
-      responseResult.text = typedText;
-      
-      response.results.append(responseResult);
+      response.results.push_back(typedText.toStdString());
    }
    
-   emit completionComplete(response);
-   
    clang_disposeCodeCompleteResults(results);
+   
+   return response;
 }

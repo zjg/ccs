@@ -9,9 +9,10 @@ should/would need to be on the same machine as the code itself).
 
 Dependencies:
    - tup (latest git)
+   - python 2.6 or newer
    - llvm/clang v3.0 (or latest svn)
    - Qt 4.6 or 4.7
-   - protocol buffers 2.4.1
+   - thrift 0.8
    - inotify-tools
       - https://github.com/zjg/inotify-tools
    - clucene (latest git)

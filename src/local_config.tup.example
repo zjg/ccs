@@ -4,11 +4,15 @@
 #
 # Tools:
 #  MOC - path/name of Qt's moc tool
-#  PROTOC - path/name of Protocol Buffer's protoc tool
 #  JAVAC - path/name of Java compiler 'javac'
 #  JAR - path/name of Java 'jar' tool (some systems have 'gjar')
 #
+#  JAVA_HOME - path to java root
+#
 # Includes/Libraries:
+#  JAVA_LIB_DIR - directory that contains jar files that should be
+#                 included when compiling java files
+#
 #  PKG_CONFIG_PATH - extra paths for pkg-config (colon-separated)
 # note : the following variables likely don't need to be used, since
 #        the paths you would put in them should get picked up by pkg-config

@@ -8,21 +8,23 @@ ifeq ($(TUP_CWD),.)
 
    include_rules
 
-   # protoc
-   : foreach *.proto |> !protoc |> {protoc_out}
-
-   # cxx
-   : foreach *.pb.cc | {protoc_out} |> !cxx |> {cxx_out}
-   : foreach *.cxx | {protoc_out} |> !cxx |> {cxx_out}
+   # thrift
+   THRIFT_FILE = ccs.thrift
+   run $(THRIFT_RULES) \
+      --cpp_cmd "$(THRIFT_CPP_WRAPPER) $(THRIFT_FILE)" \
+      --cpp_obj_bin "{cxx_out}" \
+      $(THRIFT_FILE)
+   
+   # cxx - stuff gets compiled by the thrift rules above
    : {cxx_out} |> !ar |> $(LIB_NAME)
 
    # java
-   : *.proto |> !protoToJar |> $(JAR_NAME)
+   : *.java |> !javac |> $(JAR_NAME)
 
 else
 
-   GENERATED_FILES += $(TUP_CWD)/*.pb.h
-   # GENERATED_FILES += $(TUP_CWD)/*.py
+   GENERATED_FILES += $(TUP_CWD)/*.h
+   
    INCLUDES += -I$(TUP_CWD)
 
 endif

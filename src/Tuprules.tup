@@ -13,23 +13,29 @@ AR = ar
 ifeq ($(MOC),)
    MOC = moc
 endif
-ifeq ($(PROTOC),)
-   PROTOC = protoc
-endif
 ifeq ($(JAVAC),)
    JAVAC = javac
 endif
 ifeq ($(JAR),)
    JAR = jar
 endif
+ifeq ($(JAVA_HOME),)
+   JAVA_HOME = /usr
+endif
 
-# helper script for converting proto -> jar
-PROTO_TO_JAR = $(TUP_CWD)/../tools/proto_to_jar.py
+TOOLS_DIR = $(TUP_CWD)/../tools
+THIRD_PARTY_DIR = $(TUP_CWD)/../3rdparty
+
+# helper scripts for handling Thrift files
+THRIFT_RULES = $(TOOLS_DIR)/tup_thrift_rules.py
+THRIFT_CPP_WRAPPER = $(TOOLS_DIR)/thrift_cpp_wrapper.py
+
+# helper script by Anatol Pomozov, from:
+# http://groups.google.com/group/tup-users/browse_thread/thread/4c39266b0c0582a7/1a80492716b96863
+JAVAC_PL = $(TOOLS_DIR)/javac.pl
 
 ##############################################################################
 # other constants
-
-PROTOBUF_JAR = $(TUP_CWD)/../3rdparty/protobuf-2.4.1.jar
 
 ##############################################################################
 # flags
@@ -40,8 +46,8 @@ CXXFLAGS += -Wall -Werror -g -ansi
 ##############################################################################
 # dependencies (pkg-config)
 
-PKGCONFIG_PKGS = QtCore QtNetwork protobuf libclucene-core
 PKGCONFIG_CMD = PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) pkg-config
+PKGCONFIG_PKGS = QtCore QtNetwork libclucene-core thrift
 
 INCLUDES += `$(PKGCONFIG_CMD) --cflags-only-I $(PKGCONFIG_PKGS)`
 CXXFLAGS += `$(PKGCONFIG_CMD) --cflags-only-other $(PKGCONFIG_PKGS)`
@@ -60,14 +66,24 @@ LDFLAGS += -linotifytools
 LDFLAGS += -lclucene-shared
 
 ##############################################################################
+# java
+
+JAVAC_FLAGS +=
+JAR_FLAGS +=
+JAVA_DEPS +=
+
+ifneq ($(JAVA_LIB_DIR),)
+   JAVA_DEPS += `ls $(JAVA_LIB_DIR)/*.jar | tr '\n' ' '`
+endif
+
+##############################################################################
 # rule macros
 
 !cxx = |> ^ CXX %f^ $(CXX) $(CXXFLAGS) $(INCLUDES) -c -o %o %f |> %B.o
 !ld = |> ^ LD %o^ $(LD) $(LDFLAGS) -o %o %f |>
 !ar = |> ^ AR %o^ rm -f %o && $(AR) crs %o %f |>
 !moc = |> ^ MOC %f^ $(MOC) -o%o $(INCLUDES) %f |> moc_%B.cxx
-!protoc = |> ^ PROTOC %f^ $(PROTOC) --cpp_out=. --python_out=. %f |> %B.pb.h %B.pb.cc %B_pb2.py
-!protoToJar = |> ^ PROTOC-JAR %o^ $(PROTO_TO_JAR) -c $(PROTOBUF_JAR) --protoc $(PROTOC) --javac $(JAVAC) --jar $(JAR) -o %o %f |>
+!javac = |> ^ JAVA %o^ $(JAVAC_PL) -h "$(JAVA_HOME)" -c "$(JAVAC_FLAGS)" -j "$(JAR_FLAGS)" -d "$(JAVA_DEPS)" -a "$(JAR)" -s "%f" -o %o |>
 
 ##############################################################################
 # shared subdirs
