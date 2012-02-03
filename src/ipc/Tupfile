@@ -19,7 +19,7 @@ ifeq ($(TUP_CWD),.)
    : {cxx_out} |> !ar |> $(LIB_NAME)
 
    # java
-   # -- todo
+   : *.java |> !javac |> $(JAR_NAME)
 
 else
 

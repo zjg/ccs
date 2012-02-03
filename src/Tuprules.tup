@@ -19,6 +19,9 @@ endif
 ifeq ($(JAR),)
    JAR = jar
 endif
+ifeq ($(JAVA_HOME),)
+   JAVA_HOME = /usr
+endif
 
 TOOLS_DIR = $(TUP_CWD)/../tools
 THIRD_PARTY_DIR = $(TUP_CWD)/../3rdparty
@@ -26,6 +29,10 @@ THIRD_PARTY_DIR = $(TUP_CWD)/../3rdparty
 # helper scripts for handling Thrift files
 THRIFT_RULES = $(TOOLS_DIR)/tup_thrift_rules.py
 THRIFT_CPP_WRAPPER = $(TOOLS_DIR)/thrift_cpp_wrapper.py
+
+# helper script by Anatol Pomozov, from:
+# http://groups.google.com/group/tup-users/browse_thread/thread/4c39266b0c0582a7/1a80492716b96863
+JAVAC_PL = $(TOOLS_DIR)/javac.pl
 
 ##############################################################################
 # other constants
@@ -48,6 +55,14 @@ LDFLAGS += `$(PKGCONFIG_CMD) --libs $(PKGCONFIG_PKGS)`
 # not sure why this isn't grabbed by pkg-config...
 LDFLAGS += -lclucene-shared
 
+JAVAC_FLAGS +=
+JAR_FLAGS +=
+JAVA_DEPS +=
+
+ifneq ($(JAVA_LIB_DIR),)
+   JAVA_DEPS += `ls $(JAVA_LIB_DIR)/*.jar | tr '\n' ' '`
+endif
+
 ##############################################################################
 # rule macros
 
@@ -55,6 +70,7 @@ LDFLAGS += -lclucene-shared
 !ld = |> ^ LD %o^ $(LD) $(LDFLAGS) -o %o %f |>
 !ar = |> ^ AR %o^ rm -f %o && $(AR) crs %o %f |>
 !moc = |> ^ MOC %f^ $(MOC) -o%o $(INCLUDES) %f |> moc_%B.cxx
+!javac = |> ^ JAVA %o^ $(JAVAC_PL) -h "$(JAVA_HOME)" -c "$(JAVAC_FLAGS)" -j "$(JAR_FLAGS)" -d "$(JAVA_DEPS)" -a "$(JAR)" -s "%f" -o %o |>
 
 ##############################################################################
 # shared subdirs
