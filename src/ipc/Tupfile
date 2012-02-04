@@ -2,14 +2,12 @@
 LIB_NAME = ipc.a
 STATIC_LIBS = $(TUP_CWD)/$(LIB_NAME) $(STATIC_LIBS)
 
-JAR_NAME = ccs-ipc.jar
-
 ifeq ($(TUP_CWD),.)
 
    include_rules
 
    # thrift
-   THRIFT_FILE = ccs.thrift
+   THRIFT_FILE = ccs-ipc/ccs.thrift
    run $(THRIFT_RULES) \
       --cpp_cmd "$(THRIFT_CPP_WRAPPER) $(THRIFT_FILE)" \
       --cpp_obj_bin "{cxx_out}" \
@@ -17,9 +15,6 @@ ifeq ($(TUP_CWD),.)
    
    # cxx - stuff gets compiled by the thrift rules above
    : {cxx_out} |> !ar |> $(LIB_NAME)
-
-   # java
-   : *.java |> !javac |> $(JAR_NAME)
 
 else
 

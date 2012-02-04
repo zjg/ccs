@@ -33,10 +33,6 @@ def parse_args():
     parser.add_option('--link_macro', default='!ld',
                       help='tup macro for linking .o files into executables')
     
-    # Java options
-    parser.add_option('--java_cmd', default='thrift --gen java --out . %f',
-                      help='thrift command for Java generation')
-    
     global options, args
     (options, args) = parser.parse_args()
     
@@ -71,13 +67,6 @@ def cpp_rules(thrift_file, basename, structs, services):
         tup_rule(skeleton, outputs, options.cpp_macro, obj_file)
         tup_rule(common_objs + [obj_file], '', options.link_macro, skeleton_base)
 
-def java_rules(thrift_file, basename, structs, services):
-    outputs = join_outputs(java_output_files(basename, structs, services))
-    tup_rule(thrift_file, '', options.java_cmd, outputs)
-    
-    # don't compile java files; leave that up to the Tupfile so that
-    # they all get put into one .jar
-
 def main():
     thrift_file = args[0]
     path, filename = os.path.split(thrift_file)
@@ -86,7 +75,6 @@ def main():
     structs, services = parse_thrift_file(thrift_file)
     
     cpp_rules(thrift_file, basename, structs, services)
-    java_rules(thrift_file, basename, structs, services)
 
 if __name__ == '__main__':
     parse_args()
