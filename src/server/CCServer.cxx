@@ -21,7 +21,7 @@ using boost::shared_ptr;
 CCServer::CCServer(I_CodeCompletionService& completionService)
    : completionService_(completionService)
 {
-   serverSocket_ = QSharedPointer<QTcpServer>(new QTcpServer());
+   serverSocket_ = shared_ptr<QTcpServer>(new QTcpServer());
    serverSocket_->listen(QHostAddress::Any, 9515);
    qDebug("server listening on %u", serverSocket_->serverPort());
    
@@ -37,7 +37,7 @@ CCServer::CCServer(I_CodeCompletionService& completionService)
       shared_ptr<TProtocolFactory>(new TBinaryProtocolFactory());
    
    thriftServer_ =
-      QSharedPointer<TQTcpServer>(
+      shared_ptr<TQTcpServer>(
          new TQTcpServer(serverSocket_, processor_, protocolFactory_));
 }
 

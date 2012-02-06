@@ -2,7 +2,6 @@
 #ifndef CCSERVER_H
 #define CCSERVER_H
 
-#include <QSharedPointer>
 class QTcpServer;
 
 #include "CCS.h"
@@ -43,8 +42,8 @@ private:
    boost::shared_ptr<ccs::CCSAsyncProcessor> processor_;
    boost::shared_ptr<apache::thrift::protocol::TProtocolFactory> protocolFactory_;
    
-   QSharedPointer<QTcpServer> serverSocket_;
-   QSharedPointer<apache::thrift::async::TQTcpServer> thriftServer_;
+   boost::shared_ptr<QTcpServer> serverSocket_;
+   boost::shared_ptr<apache::thrift::async::TQTcpServer> thriftServer_;
 };
 
 #endif

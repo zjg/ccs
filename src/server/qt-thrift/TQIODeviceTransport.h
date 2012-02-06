@@ -4,7 +4,8 @@
 #include <stdint.h>
 
 #include <QIODevice>
-#include <QSharedPointer>
+
+#include <boost/shared_ptr.hpp>
 
 #include <transport/TVirtualTransport.h>
 
@@ -27,7 +28,7 @@ namespace apache { namespace thrift { namespace transport {
       /**
        * Once this class is done with the device, it'll call deleteLater on it.
        */
-      TQIODeviceTransport(QWeakPointer<QIODevice> dev);
+      explicit TQIODeviceTransport(boost::shared_ptr<QIODevice> dev);
       ~TQIODeviceTransport();
 
       void open();
@@ -78,10 +79,7 @@ namespace apache { namespace thrift { namespace transport {
       void consume(uint32_t len);
 
     private:
-      TQIODeviceTransport(){}
-      void finish(boost::shared_ptr<apache::thrift::protocol::TProtocol> oprot, bool healthy);
-
-      QWeakPointer<QIODevice> dev_;
+      boost::shared_ptr<QIODevice> dev_;
   };
 }}} // apache::thrift::transport
 

@@ -5,6 +5,7 @@
 #include <protocol/TProtocol.h>
 #include <async/TAsyncProcessor.h>
 
+#include <QSharedPointer>
 #include <QTcpSocket>
 
 #include "TQIODeviceTransport.h"
@@ -24,21 +25,35 @@ QT_USE_NAMESPACE
 
 namespace apache { namespace thrift { namespace async {
 
-struct TQTcpServer::RequestContext {
+struct TQTcpServer::ConnectionContext {
   shared_ptr<TTransport> transport_;
+  shared_ptr<QTcpSocket> connection_;
+  shared_ptr<TProtocol> iprot_;
+  shared_ptr<TProtocol> oprot_;
 
-  explicit RequestContext(shared_ptr<TTransport> transport)
+  explicit ConnectionContext(shared_ptr<TTransport> transport,
+                          shared_ptr<QTcpSocket> connection,
+                          shared_ptr<TProtocol> iprot,
+                          shared_ptr<TProtocol> oprot)
     : transport_(transport)
+    , connection_(connection)
+    , iprot_(iprot)
+    , oprot_(oprot)
   {}
+  
+  virtual ~ConnectionContext()
+  {
+    qDebug("deleting ConnectionContext");
+  }
 };
 
-TQTcpServer::TQTcpServer(QWeakPointer<QTcpServer> server, shared_ptr<TAsyncProcessor> processor, shared_ptr<TProtocolFactory> pfact, QObject *parent)
+TQTcpServer::TQTcpServer(shared_ptr<QTcpServer> server, shared_ptr<TAsyncProcessor> processor, shared_ptr<TProtocolFactory> pfact, QObject *parent)
   : QObject(parent)
   , server_(server)
   , processor_(processor)
   , pfact_(pfact)
 {
- connect(server.data(), SIGNAL(newConnection()), SLOT(processIncoming()));
+ connect(server.get(), SIGNAL(newConnection()), SLOT(processIncoming()));
 }
 
 TQTcpServer::~TQTcpServer()
@@ -47,11 +62,13 @@ TQTcpServer::~TQTcpServer()
 
 void TQTcpServer::processIncoming()
 {
-  QTcpServer *server = server_.data();
-  Q_ASSERT(server);
-
+  // todo - create the ConnectionContext here, and hook into more signals
+  // coming from the QTcpSocket (error, closed, etc)
+  // (currently if a connection is opened but no data is sent, then it will
+  // sit around in memory forever)
+  
   do {
-    QTcpSocket *connection = server_.data()->nextPendingConnection();
+    QTcpSocket *connection = server_->nextPendingConnection();
 
     if (!connection) {
       Q_ASSERT(false);
@@ -59,55 +76,76 @@ void TQTcpServer::processIncoming()
       return;
     }
 
+    qDebug("TQTcpServer - got connection");
+    
     connect(connection, SIGNAL(readyRead()), SLOT(beginDecode()));
-  } while (server->hasPendingConnections());
+  } while (server_->hasPendingConnections());
 }
 
 void TQTcpServer::beginDecode()
 {
-  QTcpSocket *connection = static_cast<QTcpSocket *>(sender());
-  Q_ASSERT(connection);
+  // take ownership of the QTcpSocket; technically it could be deleted
+  // when the QTcpServer is destroyed, but any real app should delete this
+  // class before deleting the QTcpServer that we are using
+  shared_ptr<QTcpSocket> connection(qobject_cast<QTcpSocket*>(sender()));
+  Q_ASSERT(connection.get());
 
-  RequestContext *ctx;
-  shared_ptr<TTransport> transport;
-  shared_ptr<TProtocol> iprot;
-  shared_ptr<TProtocol> oprot;
-
-  try {
-    transport = shared_ptr<TTransport>(new TQIODeviceTransport(connection));
-
-    iprot = shared_ptr<TProtocol>(pfact_->getProtocol(transport));
-    oprot = shared_ptr<TProtocol>(pfact_->getProtocol(transport));
-  } catch(...) {
-    std::cerr << "Failed to initialize transports/protocols" << "\n";
+  if (ctxMap_.find(connection) == ctxMap_.end())
+  {
+    shared_ptr<TTransport> transport;
+    shared_ptr<TProtocol> iprot;
+    shared_ptr<TProtocol> oprot;
+    
+    try {
+      transport = shared_ptr<TTransport>(new TQIODeviceTransport(connection));
+      iprot = shared_ptr<TProtocol>(pfact_->getProtocol(transport));
+      oprot = shared_ptr<TProtocol>(pfact_->getProtocol(transport));
+    } catch(...) {
+      std::cerr << "Failed to initialize transports/protocols" << "\n";
+    }
+    
+    ctxMap_[connection] =
+      shared_ptr<ConnectionContext>(new ConnectionContext(transport, connection, iprot, oprot));
   }
-
-  ctx = new RequestContext(transport);
-
+  
+  shared_ptr<ConnectionContext> ctx = ctxMap_[connection];
+  
   try {
+    qDebug("TQTcpServer - processing data");
     processor_->process(
-      bind(
-          &TQTcpServer::finish,
-          ctx,
-          oprot,
-          std::tr1::placeholders::_1),
-      iprot, oprot);
+      bind(&TQTcpServer::finish, this,
+           ctx, std::tr1::placeholders::_1),
+      ctx->iprot_, ctx->oprot_);
   } catch(const TTransportException& ex) {
     std::cerr << "transport exception during processing: '" << ex.what() << "'" << "\n";
-    delete ctx;
+    ctxMap_.erase(connection);
   } catch(...) {
     std::cerr << "Failed to process" << "\n";
-    delete ctx;
+    ctxMap_.erase(connection);
   }
-
 }
 
-void TQTcpServer::finish(RequestContext *ctx, shared_ptr<TProtocol> oprot, bool healthy)
+void TQTcpServer::finish(shared_ptr<ConnectionContext> ctx, bool healthy)
 {
-  Q_UNUSED(oprot);
-  Q_ASSERT(healthy); // what to do if not healthy?
-
-  delete ctx;
+  qDebug("TQTcpServer - finish");
+  
+  shared_ptr<QTcpSocket> connection = ctx->connection_;
+  
+  if (!healthy)
+  {
+    qDebug("TQTcpServer - processor returned false");
+    ctxMap_.erase(connection);
+    return;
+  }
+  
+  if (connection->state() != QAbstractSocket::ConnectedState)
+  {
+    qDebug("TQTcpServer - socket not connected");
+    ctxMap_.erase(connection);
+    return;
+  }
+  
+  // anything else to check for ?
 }
 
 }}} // apache::thrift::async
