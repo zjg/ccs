@@ -58,6 +58,7 @@ LDFLAGS += -lclucene-shared
 !ld = |> ^ LD %o^ $(LD) $(LDFLAGS) -o %o %f |>
 !ar = |> ^ AR %o^ rm -f %o && $(AR) crs %o %f |>
 !moc = |> ^ MOC %f^ $(MOC) -o%o $(INCLUDES) %f |> moc_%B.cxx
+!wrapper = |> ^ WRAPPER %o^ $(TOOLS_DIR)/wrapper_writer.py %f %o |>
 
 ##############################################################################
 # shared subdirs

@@ -1,5 +1,6 @@
 
 BIN_NAME = ccsd
+WRAPPER_NAME = runCcsd.sh
 
 ifeq ($(TUP_CWD),.)
 
@@ -15,6 +16,8 @@ ifeq ($(TUP_CWD),.)
    : foreach $(MOCCABLE) | $(GENERATED_FILES) |> !moc |> {moc_out}
    : foreach *.cxx | $(GENERATED_FILES) {moc_out} |> !cxx |> {cxx_out}
    : {cxx_out} $(STATIC_LIBS) |> !ld |> $(BIN_NAME)
+
+   : $(BIN_NAME) |> !wrapper |> $(WRAPPER_NAME)
 
 else
 
