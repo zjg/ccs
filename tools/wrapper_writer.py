@@ -47,12 +47,13 @@ def main():
     
     env_vars = ['DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"']
     
-    added_lib_paths = set()
-    for lib_dir in options.lib_paths:
-        abs_path = os.path.abspath(lib_dir)
-        if abs_path not in added_lib_paths:
-            added_lib_paths.add(abs_path)
-            env_vars.append('LD_LIBRARY_PATH="%s:$LD_LIBRARY_PATH"' % (abs_path,))
+    if options.lib_paths:
+       added_lib_paths = set()
+       for lib_dir in options.lib_paths:
+           abs_path = os.path.abspath(lib_dir)
+           if abs_path not in added_lib_paths:
+               added_lib_paths.add(abs_path)
+               env_vars.append('LD_LIBRARY_PATH="%s:$LD_LIBRARY_PATH"' % (abs_path,))
     
     cd_cmd = 'cd "$DIR"'
     if exe_dir:
