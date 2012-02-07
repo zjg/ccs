@@ -3,6 +3,7 @@
 import optparse
 import os
 import textwrap
+import sys
 
 usage = textwrap.dedent('''\
     Creates a wrapper script for an executable, that
@@ -16,6 +17,11 @@ args = None
 
 def parse_args():
     parser = optparse.OptionParser(usage=usage)
+    
+    parser.add_option('-L', action='append', dest='lib_paths',
+                      help='paths for LD_LIBRARY_PATH')
+    parser.add_option('-l', action='append',
+                      help='ignored; provided for compatibility with LDFLAGS')
     
     global options, args
     (options, args) = parser.parse_args()
@@ -40,6 +46,13 @@ def main():
     exe_dir, exe_file = os.path.split(exe_relative_to_wrapper)
     
     env_vars = ['DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"']
+    
+    added_lib_paths = set()
+    for lib_dir in options.lib_paths:
+        abs_path = os.path.abspath(lib_dir)
+        if abs_path not in added_lib_paths:
+            added_lib_paths.add(abs_path)
+            env_vars.append('LD_LIBRARY_PATH="%s:$LD_LIBRARY_PATH"' % (abs_path,))
     
     cd_cmd = 'cd "$DIR"'
     if exe_dir:
