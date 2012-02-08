@@ -1,6 +1,4 @@
 
-#include <arpa/inet.h>
-
 #include <QtDebug>
 #include <QTcpServer>
 

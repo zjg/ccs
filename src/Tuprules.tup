@@ -29,6 +29,9 @@ THRIFT_CPP_WRAPPER = $(TOOLS_DIR)/thrift_cpp_wrapper.py
 INCLUDES += -I.
 CXXFLAGS += -Wall -Werror -g -ansi
 
+# needed for thrift headers
+CXXFLAGS += -DHAVE_INTTYPES_H -DHAVE_NETINET_IN_H
+
 ##############################################################################
 # dependencies (pkg-config)
 

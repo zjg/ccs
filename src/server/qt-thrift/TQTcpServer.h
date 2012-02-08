@@ -20,16 +20,16 @@ class TAsyncProcessor;
 class TQTcpServer : public QObject {
  Q_OBJECT
  public:
-  /**
-   * Create an abstract server from a QIODevice.
-   */
-  TQTcpServer(boost::shared_ptr<QTcpServer> server, boost::shared_ptr<TAsyncProcessor> processor, boost::shared_ptr<apache::thrift::protocol::TProtocolFactory> protocolFactory, QT_PREPEND_NAMESPACE(QObject) *parent = NULL);
-
-  ~TQTcpServer();
+  TQTcpServer(boost::shared_ptr<QTcpServer> server,
+              boost::shared_ptr<TAsyncProcessor> processor,
+              boost::shared_ptr<apache::thrift::protocol::TProtocolFactory> protocolFactory,
+              QT_PREPEND_NAMESPACE(QObject)* parent = NULL);
+  virtual ~TQTcpServer();
 
  private Q_SLOTS:
   void processIncoming();
   void beginDecode();
+  void socketClosed();
 
  private:
   class ConnectionContext;
@@ -39,8 +39,8 @@ class TQTcpServer : public QObject {
   boost::shared_ptr<QTcpServer> server_;
   boost::shared_ptr<TAsyncProcessor> processor_;
   boost::shared_ptr<apache::thrift::protocol::TProtocolFactory> pfact_;
-  
-  std::map<boost::shared_ptr<QTcpSocket>, boost::shared_ptr<ConnectionContext> > ctxMap_;
+
+  std::map<QT_PREPEND_NAMESPACE(QTcpSocket)*, boost::shared_ptr<ConnectionContext> > ctxMap_;
 };
 
 }}} // apache::thrift::async

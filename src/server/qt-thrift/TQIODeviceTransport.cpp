@@ -9,9 +9,6 @@
 namespace apache { namespace thrift { namespace transport {
   using boost::shared_ptr;
 
-  /**
-   * Manages the request context for a tcp connection established from a QTcpServer
-   */
   TQIODeviceTransport::TQIODeviceTransport(shared_ptr<QIODevice> dev)
     : dev_(dev)
   {
@@ -19,14 +16,14 @@ namespace apache { namespace thrift { namespace transport {
 
   TQIODeviceTransport::~TQIODeviceTransport()
   {
-    qDebug("TQIODeviceTransport - destructor");
     dev_->close();
   }
 
   void TQIODeviceTransport::open()
   {
     if (!isOpen()) {
-      throw TTransportException(TTransportException::NOT_OPEN, "open() underlying QIODevice isn't open");
+      throw TTransportException(TTransportException::NOT_OPEN,
+                                "open(): underlying QIODevice isn't open");
     }
   }
 
@@ -60,7 +57,7 @@ namespace apache { namespace thrift { namespace transport {
         throw;
       }
       if (readSize == 0) {
-        dev_->waitForReadyRead(50);
+        // dev_->waitForReadyRead(50);
       } else {
         buf += readSize;
         len -= readSize;
@@ -75,32 +72,33 @@ namespace apache { namespace thrift { namespace transport {
     qint64 readSize;
 
     if (!dev_->isOpen()) {
-      throw TTransportException(TTransportException::NOT_OPEN, "read() underlying QIODevice is not open");
+      throw TTransportException(TTransportException::NOT_OPEN,
+                                "read(): underlying QIODevice is not open");
     }
 
     actualSize = (uint32_t)std::min((qint64)len, dev_->bytesAvailable());
     readSize = dev_->read(reinterpret_cast<char *>(buf), len);
 
     if (readSize < 0) {
-      QAbstractSocket *socket;
-      if ((socket = qobject_cast<QAbstractSocket *>(dev_.get()))) {
-        throw TTransportException(TTransportException::UNKNOWN, "Failed to read() from QAbstractSocket", socket->error());
+      QAbstractSocket* socket;
+      if ((socket = qobject_cast<QAbstractSocket* >(dev_.get()))) {
+        throw TTransportException(TTransportException::UNKNOWN,
+                                  "Failed to read() from QAbstractSocket",
+                                  socket->error());
       }
-      throw TTransportException(TTransportException::UNKNOWN, "Failed to read from from QIODevice");
+      throw TTransportException(TTransportException::UNKNOWN,
+                                "Failed to read from from QIODevice");
     }
 
-    qDebug("Read %lld bytes from device", readSize);
     return (uint32_t)readSize;
   }
 
   void TQIODeviceTransport::write(const uint8_t* buf, uint32_t len)
   {
-    qDebug("Writing %d bytes to device", len);
     while (len) {
       uint32_t written = write_partial(buf, len);
       len -= written;
-      bool ok = dev_->waitForBytesWritten(50);
-      qDebug("wait for bytes written returned %s", ok ? "true" : "false");
+      // dev_->waitForBytesWritten(50);
     }
   }
 
@@ -109,17 +107,20 @@ namespace apache { namespace thrift { namespace transport {
     qint64 written;
 
     if (!dev_->isOpen()) {
-      throw TTransportException(TTransportException::NOT_OPEN, "write_partial() underlying QIODevice is not open");
+      throw TTransportException(TTransportException::NOT_OPEN,
+                                "write_partial(): underlying QIODevice is not open");
     }
 
-    written = dev_->write(reinterpret_cast<const char *>(buf), len);
+    written = dev_->write(reinterpret_cast<const char*>(buf), len);
     if (written < 0) {
-      QAbstractSocket *socket;
-      if ((socket = qobject_cast<QAbstractSocket *>(dev_.get()))) {
-        throw TTransportException(TTransportException::UNKNOWN, "write_partial() failed to write to QAbstractSocket", socket->error());
+      QAbstractSocket* socket;
+      if ((socket = qobject_cast<QAbstractSocket*>(dev_.get()))) {
+        throw TTransportException(TTransportException::UNKNOWN,
+                                  "write_partial(): failed to write to QAbstractSocket", socket->error());
       }
 
-      throw TTransportException(TTransportException::UNKNOWN, "write_partial() failed to write to underlying QIODevice");
+      throw TTransportException(TTransportException::UNKNOWN,
+                                "write_partial(): failed to write to underlying QIODevice");
     }
 
     return (uint32_t)written;
@@ -128,13 +129,13 @@ namespace apache { namespace thrift { namespace transport {
   void TQIODeviceTransport::flush()
   {
     if (!dev_->isOpen()) {
-      throw TTransportException(TTransportException::NOT_OPEN, "flush() underlying QIODevice is not open");
+      throw TTransportException(TTransportException::NOT_OPEN,
+                                "flush(): underlying QIODevice is not open");
     }
 
-    QAbstractSocket *socket;
+    QAbstractSocket* socket;
 
-    qDebug("TQIODeviceTransport - flushing socket");
-    if ((socket = qobject_cast<QAbstractSocket *>(dev_.get()))) {
+    if ((socket = qobject_cast<QAbstractSocket*>(dev_.get()))) {
       socket->flush();
     } else {
       dev_->waitForBytesWritten(1);
