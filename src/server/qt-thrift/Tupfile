@@ -1,19 +1,27 @@
 
-LIB_NAME = qt-thrift.a
-STATIC_LIBS = $(TUP_CWD)/$(LIB_NAME) $(STATIC_LIBS)
+# only build this stuff if we don't have thrift-qt
+ifneq (@(HAVE_THRIFT_QT),y)
 
-ifeq ($(TUP_CWD),.)
-    
-    include_rules
-    
-    MOCCABLE += TQTcpServer.h
-    
-    : foreach $(MOCCABLE) |> !moc |> {moc_out}
-    : foreach *.cpp *.cxx | {moc_out} |> !cxx |> {cxx_out}
-    : {cxx_out} |> !ar |> $(LIB_NAME)
-    
-else
+   LIB_NAME = qt-thrift.a
+   STATIC_LIBS = $(TUP_CWD)/$(LIB_NAME) $(STATIC_LIBS)
 
-    INCLUDES += -I$(TUP_CWD)
-    
+   ifeq ($(TUP_CWD),.)
+
+       include_rules
+
+       MOCCABLE += TQTcpServer.h
+
+       SOURCES += TQIODeviceTransport.cpp
+       SOURCES += TQTcpServer.cpp
+
+       : foreach $(MOCCABLE) |> !moc |> {moc_out}
+       : foreach $(SOURCES) {moc_out} |> !cxx |> {cxx_out}
+       : {cxx_out} |> !ar |> $(LIB_NAME)
+
+   else
+
+       INCLUDES += -I$(TUP_CWD)
+
+   endif
+
 endif

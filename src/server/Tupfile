@@ -9,12 +9,21 @@ ifeq ($(TUP_CWD),.)
    include $(IPC_DIR)/Tupfile
    include clangLib/Tupfile
    include qt-thrift/Tupfile
-   
+
    MOCCABLE += FileChangeNotifier.h
    MOCCABLE += TranslationUnitManager.h
-   
+
+   VARSED_SOURCES += CCServer.cxx
+
+   SOURCES += ccsMain.cxx
+   SOURCES += CodeCompletionService.cxx
+   SOURCES += FileChangeNotifier.cxx
+   SOURCES += SourceFinder.cxx
+   SOURCES += TranslationUnitManager.cxx
+
+   : foreach $(VARSED_SOURCES) |> !varsed |> {varsed_out}
    : foreach $(MOCCABLE) | $(GENERATED_FILES) |> !moc |> {moc_out}
-   : foreach *.cxx | $(GENERATED_FILES) {moc_out} |> !cxx |> {cxx_out}
+   : foreach $(SOURCES) {varsed_out} {moc_out} | $(GENERATED_FILES) |> !cxx |> {cxx_out}
    : {cxx_out} $(STATIC_LIBS) |> !ld |> $(BIN_NAME)
 
    : $(BIN_NAME) |> !wrapper |> $(WRAPPER_NAME)

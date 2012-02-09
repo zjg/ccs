@@ -14,6 +14,10 @@ ifeq ($(MOC),)
    MOC = moc
 endif
 
+ifeq ($(TUP),)
+   TUP = tup
+endif
+
 TOOLS_DIR = $(TUP_CWD)/../tools
 
 # helper scripts for handling Thrift files
@@ -29,14 +33,19 @@ THRIFT_CPP_WRAPPER = $(TOOLS_DIR)/thrift_cpp_wrapper.py
 INCLUDES += -I.
 CXXFLAGS += -Wall -Werror -g -ansi
 
-# needed for thrift headers
-CXXFLAGS += -DHAVE_INTTYPES_H -DHAVE_NETINET_IN_H
-
 ##############################################################################
 # dependencies (pkg-config)
 
 PKGCONFIG_CMD = PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) pkg-config
 PKGCONFIG_PKGS = QtCore QtNetwork libclucene-core thrift
+
+# todo - putting this here results in everything getting re-compiled
+# every time this changes... it could probably be moved into the
+# qt-thrift Tupfile, but then we need to update the 3 vars below
+# with the new pkg-config list...
+ifeq (@(HAVE_THRIFT_QT),y)
+   PKGCONFIG_PKGS += thrift-qt
+endif
 
 INCLUDES += `$(PKGCONFIG_CMD) --cflags-only-I $(PKGCONFIG_PKGS)`
 CXXFLAGS += `$(PKGCONFIG_CMD) --cflags-only-other $(PKGCONFIG_PKGS)`
@@ -54,9 +63,13 @@ LDFLAGS += -linotifytools
 # clucene - not sure why this isn't grabbed by pkg-config...
 LDFLAGS += -lclucene-shared
 
+# thrift - flags needed for thrift headers
+CXXFLAGS += -DHAVE_INTTYPES_H -DHAVE_NETINET_IN_H
+
 ##############################################################################
 # rule macros
 
+!varsed = |> ^ VARSED %f^ $(TUP) varsed %f %o |> varsed_%f
 !cxx = |> ^ CXX %f^ $(CXX) $(CXXFLAGS) $(INCLUDES) -c -o %o %f |> %B.o
 !ld = |> ^ LD %o^ $(LD) $(LDFLAGS) -o %o %f |>
 !ar = |> ^ AR %o^ rm -f %o && $(AR) crs %o %f |>
