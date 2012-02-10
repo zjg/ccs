@@ -7,8 +7,8 @@ ifeq ($(TUP_CWD),.)
    include_rules
 
    include $(IPC_DIR)/Tupfile
+   include $(QT_THRIFT_DIR)/Tupfile
    include clangLib/Tupfile
-   include qt-thrift/Tupfile
 
    MOCCABLE += FileChangeNotifier.h
    MOCCABLE += TranslationUnitManager.h

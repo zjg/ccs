@@ -80,4 +80,5 @@ CXXFLAGS += -DHAVE_INTTYPES_H -DHAVE_NETINET_IN_H
 # shared subdirs
 
 IPC_DIR = $(TUP_CWD)/ipc
+QT_THRIFT_DIR = $(TUP_CWD)/qt-thrift
 

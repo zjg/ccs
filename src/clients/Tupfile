@@ -1,0 +1,32 @@
+
+BIN_NAME = ccsTest
+WRAPPER_NAME = runCcsTest.sh
+
+ifeq ($(TUP_CWD),.)
+
+   include_rules
+
+   include $(IPC_DIR)/Tupfile
+   include $(QT_THRIFT_DIR)/Tupfile
+
+   # MOCCABLE += 
+
+   VARSED_SOURCES += ccsTestMain.cxx
+
+   # SOURCES += 
+
+   : foreach $(VARSED_SOURCES) |> !varsed |> {varsed_out}
+   # : foreach $(MOCCABLE) | $(GENERATED_FILES) |> !moc |> {moc_out}
+   # : foreach $(SOURCES) {varsed_out} {moc_out} | $(GENERATED_FILES) |> !cxx |> {cxx_out}
+   : foreach $(SOURCES) {varsed_out} | $(GENERATED_FILES) |> !cxx |> {cxx_out}
+   : {cxx_out} $(STATIC_LIBS) |> !ld |> $(BIN_NAME)
+
+   : $(BIN_NAME) |> !wrapper |> $(WRAPPER_NAME)
+
+else
+
+   # GENERATED_FILES += 
+   INCLUDES += -I$(TUP_CWD)
+
+endif
+

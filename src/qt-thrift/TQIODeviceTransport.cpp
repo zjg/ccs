@@ -57,7 +57,7 @@ namespace apache { namespace thrift { namespace transport {
         throw;
       }
       if (readSize == 0) {
-        // dev_->waitForReadyRead(50);
+        dev_->waitForReadyRead(50);
       } else {
         buf += readSize;
         len -= readSize;
@@ -70,14 +70,13 @@ namespace apache { namespace thrift { namespace transport {
   {
     uint32_t actualSize;
     qint64 readSize;
-
     if (!dev_->isOpen()) {
       throw TTransportException(TTransportException::NOT_OPEN,
                                 "read(): underlying QIODevice is not open");
     }
 
     actualSize = (uint32_t)std::min((qint64)len, dev_->bytesAvailable());
-    readSize = dev_->read(reinterpret_cast<char *>(buf), len);
+    readSize = dev_->read(reinterpret_cast<char *>(buf), actualSize);
 
     if (readSize < 0) {
       QAbstractSocket* socket;
@@ -98,7 +97,7 @@ namespace apache { namespace thrift { namespace transport {
     while (len) {
       uint32_t written = write_partial(buf, len);
       len -= written;
-      // dev_->waitForBytesWritten(50);
+      dev_->waitForBytesWritten(50);
     }
   }
 
