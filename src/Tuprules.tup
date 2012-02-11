@@ -37,15 +37,7 @@ CXXFLAGS += -Wall -Werror -g -ansi
 # dependencies (pkg-config)
 
 PKGCONFIG_CMD = PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) pkg-config
-PKGCONFIG_PKGS = QtCore QtNetwork libclucene-core thrift
-
-# todo - putting this here results in everything getting re-compiled
-# every time this changes... it could probably be moved into the
-# qt-thrift Tupfile, but then we need to update the 3 vars below
-# with the new pkg-config list...
-ifeq (@(HAVE_THRIFT_QT),y)
-   PKGCONFIG_PKGS += thrift-qt
-endif
+PKGCONFIG_PKGS = QtCore QtNetwork libclucene-core thrift thrift-qt
 
 INCLUDES += `$(PKGCONFIG_CMD) --cflags-only-I $(PKGCONFIG_PKGS)`
 CXXFLAGS += `$(PKGCONFIG_CMD) --cflags-only-other $(PKGCONFIG_PKGS)`
@@ -80,5 +72,4 @@ CXXFLAGS += -DHAVE_INTTYPES_H -DHAVE_NETINET_IN_H
 # shared subdirs
 
 IPC_DIR = $(TUP_CWD)/ipc
-QT_THRIFT_DIR = $(TUP_CWD)/qt-thrift
 

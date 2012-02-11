@@ -6,11 +6,7 @@
 #include "CCS.h"
 
 #include <protocol/TBinaryProtocol.h>
-#if '@HAVE_THRIFT_QT@' == 'y'
-   #include <qt/TQIODeviceTransport.h>
-#else
-   #include "TQIODeviceTransport.h"
-#endif
+#include <qt/TQIODeviceTransport.h>
 
 using namespace ::apache::thrift;
 using namespace ::apache::thrift::protocol;

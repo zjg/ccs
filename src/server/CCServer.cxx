@@ -6,12 +6,7 @@
 #include "I_CodeCompletionService.h"
 
 #include <protocol/TBinaryProtocol.h>
-
-#if '@HAVE_THRIFT_QT@' == 'y'
-   #include <qt/TQTcpServer.h>
-#else
-   #include "TQTcpServer.h"
-#endif
+#include <qt/TQTcpServer.h>
 
 using namespace ::apache::thrift;
 using namespace ::apache::thrift::protocol;

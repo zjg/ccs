@@ -12,7 +12,7 @@ Dependencies:
    - python 2.6 or newer
    - llvm/clang v3.0 (or latest svn)
    - Qt 4.6 or 4.7
-   - thrift 0.8
+   - thrift 0.9 or newer (latest svn)
    - inotify-tools
       - https://github.com/zjg/inotify-tools
    - clucene (latest git)
