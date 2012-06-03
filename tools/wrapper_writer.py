@@ -33,7 +33,7 @@ wrapper_base = textwrap.dedent('''\
     #!/bin/bash
     %(env_vars)s
     %(cd)s
-    ./%(exe_file)s
+    ./%(exe_file)s $*
     ''')
 
 def main():
