@@ -28,7 +28,7 @@ ifeq ($(TUP_CWD),.)
    : {cxx_out} $(STATIC_LIBS) |> !ld |> $(BIN_NAME)
 
    : $(BIN_NAME) |> !wrapper |> $(WRAPPER_NAME)
-
+   
 else
 
    # GENERATED_FILES += 

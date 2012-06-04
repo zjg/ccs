@@ -1,5 +1,6 @@
 
 #include <QTime>
+#include <QDebug>
 
 #include "ClangIndex.h"
 #include "ClangTranslationUnit.h"
@@ -8,41 +9,54 @@
 const QStringList ClangTranslationUnit::defaultIncludeDirs_ = QStringList()
 
    // archon
-   << "/home/doug/local/include"
-   << "/usr/include/c++/4.4.6"
-   << "/usr/include/c++/4.4.6/i686-redhat-linux"
-   << "/usr/include/c++/4.4.6/backward"
-   << "/usr/local/include"
-   << "/usr/lib/gcc/i686-redhat-linux/4.4.6/include"
-   << "/usr/include"
-   << "/usr/include/Qt"
-   << "/usr/include/QtCore"
-   << "/usr/include/QtNetwork"
-   
+   // << "/home/doug/local/include"
+   // << "/usr/include/c++/4.4.6"
+   // << "/usr/include/c++/4.4.6/i686-redhat-linux"
+   // << "/usr/include/c++/4.4.6/backward"
+   // << "/usr/local/include"
+   // << "/usr/lib/gcc/i686-redhat-linux/4.4.6/include"
+   // << "/usr/include"
+   // << "/usr/include/Qt"
+   // << "/usr/include/QtCore"
+   // << "/usr/include/QtNetwork"
+
    // work VM
-   << "/home/drosvick/local/include"
-   << "/home/drosvick/sw/3rdparty/qt-4.7.2/include"
-   << "/opt/gcc/gcc-4.5.3/lib/gcc/i686-pc-linux-gnu/4.5.3/../../../../include/c++/4.5.3"
-   << "/opt/gcc/gcc-4.5.3/lib/gcc/i686-pc-linux-gnu/4.5.3/../../../../include/c++/4.5.3/i686-pc-linux-gnu"
-   << "/opt/gcc/gcc-4.5.3/lib/gcc/i686-pc-linux-gnu/4.5.3/../../../../include/c++/4.5.3/backward"
-   << "/opt/gcc/gcc-4.5.3/include"
-   << "/opt/gcc/gcc-4.5.3/lib/gcc/i686-pc-linux-gnu/4.5.3/include"
-   << "/opt/gcc/gcc-4.5.3/lib/gcc/i686-pc-linux-gnu/4.5.3/include-fixed"
-   
+   // << "/home/drosvick/local/include"
+   // << "/home/drosvick/sw/3rdparty/qt-4.7.2/include"
+   // << "/opt/gcc/gcc-4.5.3/lib/gcc/i686-pc-linux-gnu/4.5.3/../../../../include/c++/4.5.3"
+   // << "/opt/gcc/gcc-4.5.3/lib/gcc/i686-pc-linux-gnu/4.5.3/../../../../include/c++/4.5.3/i686-pc-linux-gnu"
+   // << "/opt/gcc/gcc-4.5.3/lib/gcc/i686-pc-linux-gnu/4.5.3/../../../../include/c++/4.5.3/backward"
+   // << "/opt/gcc/gcc-4.5.3/include"
+   // << "/opt/gcc/gcc-4.5.3/lib/gcc/i686-pc-linux-gnu/4.5.3/include"
+   // << "/opt/gcc/gcc-4.5.3/lib/gcc/i686-pc-linux-gnu/4.5.3/include-fixed"
+
    // HDVSM
-   << "/home/drosvick/workspaces/HDVSMDev/sw/3rdparty/qt-4.7.2/linux/include"
-   << "/home/drosvick/workspaces/HDVSMDev/sw/3rdparty/qt-4.7.2/linux/include/QtCore"
-   << "/home/drosvick/workspaces/HDVSMDev/sw/3rdparty/qt-4.7.2/linux/include/QtNetwork"
-   << "/home/drosvick/workspaces/HDVSMDev/sw/3rdparty/qt-4.7.2/linux/include/QtGui"
-   << "/home/drosvick/workspaces/HDVSMDev/sw/3rdparty/qt-4.7.2/linux/include/QtTest"
-   << "/home/drosvick/workspaces/HDVSMDev/sw/3rdparty/qt-4.7.2/linux/include/QtXml"
-   << "/home/drosvick/workspaces/HDVSMDev/sw/3rdparty/anubis/include"
-   << "/home/drosvick/workspaces/HDVSMDev/sw/3rdparty/vcstoolkit/include"
-   << "/home/drosvick/workspaces/HDVSMDev/sw/3rdparty/sqlite-3.3.6/include"
+   // << "/home/drosvick/workspaces/HDVSMDev/sw/3rdparty/qt-4.7.2/linux/include"
+   // << "/home/drosvick/workspaces/HDVSMDev/sw/3rdparty/qt-4.7.2/linux/include/QtCore"
+   // << "/home/drosvick/workspaces/HDVSMDev/sw/3rdparty/qt-4.7.2/linux/include/QtNetwork"
+   // << "/home/drosvick/workspaces/HDVSMDev/sw/3rdparty/qt-4.7.2/linux/include/QtGui"
+   // << "/home/drosvick/workspaces/HDVSMDev/sw/3rdparty/qt-4.7.2/linux/include/QtTest"
+   // << "/home/drosvick/workspaces/HDVSMDev/sw/3rdparty/qt-4.7.2/linux/include/QtXml"
+   // << "/home/drosvick/workspaces/HDVSMDev/sw/3rdparty/anubis/include"
+   // << "/home/drosvick/workspaces/HDVSMDev/sw/3rdparty/vcstoolkit/include"
+   // << "/home/drosvick/workspaces/HDVSMDev/sw/3rdparty/sqlite-3.3.6/include"
+
+   // debian 6
+   << "/usr/local/include"
+   << "/usr/lib/gcc/i486-linux-gnu/4.4.5/include"
+   << "/usr/lib/gcc/i486-linux-gnu/4.4.5/include-fixed"
+   << "/usr/include/c++/4.4"
+   << "/usr/include"
+   << "/usr/include/qt4"
+   << "/usr/include/qt4/QtCore"
+   << "/usr/include/qt4/QtNetwork"
+   << "/usr/local/include/CLucene/ext"
+   << "/usr/local/include/thrift"
    ;
 
 const QStringList ClangTranslationUnit::extraClangArgs_ = QStringList()
-   << "-x" << "c++";
+   << "-x" << "c++" << "-w" << "-ansi"
+   << "-DHAVE_INTTYPES_H" << "-DHAVE_NETINET_IN_H";
 
 const unsigned ClangTranslationUnit::tuOptions_ =
    clang_defaultEditingTranslationUnitOptions()
@@ -62,7 +76,7 @@ ClangTranslationUnit::ClangTranslationUnit(
    {
       clangArgsData_.append(QByteArray(qPrintable(extraArg)));
    }
-   
+
    for (int i = 0; i < clangArgsData_.size(); ++i)
    {
       clangArgs_.append(clangArgsData_[i].constData());
@@ -94,7 +108,7 @@ void ClangTranslationUnit::parse()
 {
    QTime timer;
    timer.start();
-   
+
    tu_ = clang_parseTranslationUnit(index_, qPrintable(srcFile_),
                                     clangArgs_.constData(), clangArgs_.size(),
                                     /* unsaved files */ NULL, 0,
@@ -103,8 +117,9 @@ void ClangTranslationUnit::parse()
    {
       qDebug("Failed to parse TU from file [%s]", qPrintable(srcFile_));
    }
-   
+
    qDebug("   parsed [%s] in %dms", qPrintable(srcFile_), timer.elapsed());
+   qDebug() << "clang args:" << clangArgs_;
 }
 
 void ClangTranslationUnit::update()
@@ -115,10 +130,10 @@ void ClangTranslationUnit::update()
       parse();
       return;
    }
-   
+
    QTime timer;
    timer.start();
-   
+
    int rval = clang_reparseTranslationUnit(tu_,
                                            /* unsaved files */ 0, NULL,
                                            tuOptions_);
@@ -129,7 +144,7 @@ void ClangTranslationUnit::update()
       parse();
       return;
    }
-   
+
    qDebug("   reparsed [%s] in %dms", qPrintable(srcFile_), timer.elapsed());
 }
 
@@ -140,16 +155,16 @@ void ClangTranslationUnit::loadFromFile(QString tuFile)
       qDebug("   -- loading with existing tu_, disposing");
       disposeTu();
    }
-   
+
    QTime timer;
    timer.start();
-   
+
    tu_ = clang_createTranslationUnit(index_, qPrintable(tuFile));
    if (tu_ == NULL)
    {
       qDebug("Failed to load TU from file [%s]", qPrintable(tuFile));
    }
-   
+
    qDebug("   loaded [%s] in %dms", qPrintable(srcFile_), timer.elapsed());
 }
 
@@ -160,10 +175,10 @@ void ClangTranslationUnit::saveToFile(QString tuFile)
       qDebug("   -- attempt to save NULL tu_, doing nothing");
       return;
    }
-   
+
    QTime timer;
    timer.start();
-   
+
    int rval = clang_saveTranslationUnit(tu_, qPrintable(tuFile),
                                         CXSaveTranslationUnit_None);
    if (rval != CXSaveError_None)
@@ -175,7 +190,7 @@ void ClangTranslationUnit::saveToFile(QString tuFile)
             msg = msg.arg("I/O error");
             break;
          case CXSaveError_TranslationErrors:
-            msg = msg.arg("source file contained parse errors");
+            msg = msg.arg("parse errors");
             break;
          case CXSaveError_InvalidTU:
             msg = msg.arg("invalid TU");
@@ -183,7 +198,7 @@ void ClangTranslationUnit::saveToFile(QString tuFile)
       }
       qDebug(qPrintable(msg));
    }
-      
+
    qDebug("   saved [%s] in %dms", qPrintable(srcFile_), timer.elapsed());
 }
 

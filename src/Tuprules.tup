@@ -6,7 +6,8 @@ include local_config.tup
 ##############################################################################
 # tools
 
-CXX = g++
+# CXX = g++
+CXX = clang
 LD = $(CXX)
 AR = ar
 
@@ -31,7 +32,8 @@ THRIFT_CPP_WRAPPER = $(TOOLS_DIR)/thrift_cpp_wrapper.py
 # flags
 
 INCLUDES += -I.
-CXXFLAGS += -Wall -Werror -g -ansi
+# CXXFLAGS += -Wall -Werror -g -ansi
+CXXFLAGS += -w -g -ansi
 
 ##############################################################################
 # dependencies (pkg-config)

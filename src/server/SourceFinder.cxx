@@ -30,10 +30,10 @@ QStringList SourceFinder::findSourceFiles(QString startingDir)
    QStringList foundFiles;
    QStack<QDir> dirStack;
    QList<QDir> processedDirs;
-   
+
    QTime timer;
    timer.start();
-   
+
    dirStack.push(QDir(startingDir));
    while (!dirStack.isEmpty())
    {
@@ -43,7 +43,7 @@ QStringList SourceFinder::findSourceFiles(QString startingDir)
          continue;
       }
       processedDirs.append(dir);
-      
+
       // source files
       foreach (QFileInfo info, dir.entryInfoList(srcFileFilters_,
                                                  QDir::Files | QDir::NoDotAndDotDot | QDir::Readable))
@@ -62,7 +62,7 @@ QStringList SourceFinder::findSourceFiles(QString startingDir)
             foundFiles.append(info.absoluteFilePath());
          }
       }
-      
+
       // directories
       foreach (QFileInfo info, dir.entryInfoList(QDir::AllDirs | QDir::NoDotAndDotDot | QDir::Readable))
       {

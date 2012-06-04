@@ -24,23 +24,23 @@ public:
 
    void parse();
    void update();
-   
+
    void loadFromFile(QString tuFile);
    void saveToFile(QString tuFile);
 
 private: // functions
    Q_DISABLE_COPY(ClangTranslationUnit);
-   
+
    void disposeTu();
 
 private: // members
    ClangIndex& index_;
    QString srcFile_;
    CXTranslationUnit tu_;
-   
+
    QList<QByteArray> clangArgsData_;
    QVector<const char*> clangArgs_;
-   
+
 private: // static
    static const QStringList defaultIncludeDirs_;
    static const QStringList extraClangArgs_;

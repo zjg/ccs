@@ -21,18 +21,18 @@ CCServer::CCServer(I_CodeCompletionService& completionService)
    serverSocket_ = shared_ptr<QTcpServer>(new QTcpServer());
    serverSocket_->listen(QHostAddress::Any, 9515);
    qDebug("server listening on %u", serverSocket_->serverPort());
-   
+
    asyncHandler_ =
       shared_ptr<CCSCobHandler>(new CCSCobHandler());
    asyncHandler_->server_ = this;
-   
+
    processor_ =
       shared_ptr<ccs::CCSAsyncProcessor>(
          new ccs::CCSAsyncProcessor(asyncHandler_));
-   
+
    protocolFactory_ =
       shared_ptr<TProtocolFactory>(new TBinaryProtocolFactory());
-   
+
    thriftServer_ =
       shared_ptr<TQTcpServer>(
          new TQTcpServer(serverSocket_, processor_, protocolFactory_));

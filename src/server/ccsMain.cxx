@@ -68,7 +68,6 @@ int main(int argc, char* argv[])
       }
    }
 
-
    FileChangeNotifier notifier(sourceFiles);
    TranslationUnitManager tuManager(index, includeDirs, QDir(".ccsd"));
    QObject::connect(&notifier, SIGNAL(fileChanged(QString)),

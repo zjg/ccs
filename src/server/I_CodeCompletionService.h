@@ -8,7 +8,7 @@ class I_CodeCompletionService
 {
 public:
    virtual ~I_CodeCompletionService() {}
-   
+
    virtual ccs::CodeCompletionResponse process(const ccs::CodeCompletionRequest& request) = 0;
 };
 
