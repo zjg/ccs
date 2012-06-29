@@ -62,7 +62,7 @@ void FileChangeNotifier::pollInotify()
    foreach (QString filename, modifiedFiles)
    {
       qDebug("emitting fileChanged [%s]", qPrintable(filename));
-      emit fileChanged(filename);
+      // emit fileChanged(filename);
    }
 }
 

@@ -3,3 +3,4 @@
 *.swp
 local_config.tup
 .ccsd
+build/

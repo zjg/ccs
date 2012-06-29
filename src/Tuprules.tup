@@ -32,14 +32,16 @@ THRIFT_CPP_WRAPPER = $(TOOLS_DIR)/thrift_cpp_wrapper.py
 # flags
 
 INCLUDES += -I.
-# CXXFLAGS += -Wall -Werror -g -ansi
-CXXFLAGS += -w -g -ansi
+CXXFLAGS += -Wall -Werror -g -ansi
+
+CXXFLAGS += -Wno-format-security
+CXXFLAGS += -Wno-uninitialized
 
 ##############################################################################
 # dependencies (pkg-config)
 
 PKGCONFIG_CMD = PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) pkg-config
-PKGCONFIG_PKGS = QtCore QtNetwork libclucene-core thrift thrift-qt
+PKGCONFIG_PKGS = QtCore QtNetwork thrift thrift-qt
 
 INCLUDES += `$(PKGCONFIG_CMD) --cflags-only-I $(PKGCONFIG_PKGS)`
 CXXFLAGS += `$(PKGCONFIG_CMD) --cflags-only-other $(PKGCONFIG_PKGS)`
@@ -53,9 +55,6 @@ LDFLAGS += -lclang
 
 # inotifytools
 LDFLAGS += -linotifytools
-
-# clucene - not sure why this isn't grabbed by pkg-config...
-LDFLAGS += -lclucene-shared
 
 # thrift - flags needed for thrift headers
 CXXFLAGS += -DHAVE_INTTYPES_H -DHAVE_NETINET_IN_H

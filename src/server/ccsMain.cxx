@@ -1,5 +1,4 @@
 
-#include <CLucene.h>
 #include <clang-c/Index.h>
 #include <inotifytools/inotifytools.h>
 
@@ -31,8 +30,6 @@ int main(int argc, char* argv[])
              inotifytools_get_max_user_watches(),
              inotifytools_get_max_user_instances(),
              inotifytools_get_max_queued_events());
-
-      lucene::debug::LuceneBase cluceneObj;
    }
 
    int inotify_init = inotifytools_initialize();

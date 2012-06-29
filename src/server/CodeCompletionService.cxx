@@ -32,6 +32,9 @@ ccs::CodeCompletionResponse CodeCompletionService::process(
    QTime timer;
    timer.start();
    
+   qDebug("getting completion for '%s' at %d:%d", request.filename.c_str(),
+          request.line, request.column);
+   
    CXCodeCompleteResults* results =
       clang_codeCompleteAt(*tu,
                            request.filename.c_str(),
@@ -54,11 +57,20 @@ ccs::CodeCompletionResponse CodeCompletionService::process(
    {
       const CXCompletionResult& result = results->Results[i];
       
-      ClangString typedText(
-         clang_getCompletionChunkText(result.CompletionString,
-                                      CXCompletionChunk_TypedText));
+      QString output;
+      unsigned int numChunks = clang_getNumCompletionChunks(result.CompletionString);
+      for (unsigned int j = 0; j < numChunks; ++j)
+      {
+         ClangString chunk(clang_getCompletionChunkText(result.CompletionString, j));
+         output += chunk;
+      }
       
-      response.results.push_back(typedText.toStdString());
+      response.results.push_back(output.toStdString());
+      
+      if (i < 10)
+      {
+         qDebug("   [%d] '%s'", i, qPrintable(output));
+      }
    }
    
    clang_disposeCodeCompleteResults(results);

@@ -45,11 +45,12 @@ const QStringList ClangTranslationUnit::defaultIncludeDirs_ = QStringList()
    << "/usr/local/include"
    << "/usr/lib/gcc/i486-linux-gnu/4.4.5/include"
    << "/usr/lib/gcc/i486-linux-gnu/4.4.5/include-fixed"
-   << "/usr/include/c++/4.4"
+   // << "/usr/include/c++/4.4"
    << "/usr/include"
    << "/usr/include/qt4"
    << "/usr/include/qt4/QtCore"
    << "/usr/include/qt4/QtNetwork"
+   << "/usr/include/qt4/QtGui"
    << "/usr/local/include/CLucene/ext"
    << "/usr/local/include/thrift"
    ;

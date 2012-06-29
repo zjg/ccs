@@ -15,7 +15,6 @@ Dependencies:
    - thrift 0.9 or newer (latest svn)
    - inotify-tools
       - https://github.com/zjg/inotify-tools
-   - clucene (latest git)
 
 
 

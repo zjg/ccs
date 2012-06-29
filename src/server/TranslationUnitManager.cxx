@@ -32,7 +32,7 @@ ClangTranslationUnit* TranslationUnitManager::translationUnit(QString sourceFile
    // }
 
    updateTranslationUnit(sourceFile);
-
+   
    // qDebug("cache after:");
    // foreach (QString name, tuCache_.keys())
    // {
@@ -60,35 +60,35 @@ void TranslationUnitManager::updateTranslationUnit(QString sourceFile)
    }
 
    QString tuFile = tuFileFromSourceFile(sourceFile);
-   QFileInfo tuFileInfo(tuFile);
+   // QFileInfo tuFileInfo(tuFile);
 
    if (!tuCache_.contains(tuFile))
    {
       ClangTranslationUnit* tu =
          new ClangTranslationUnit(index_, sourceFile, includeDirs_);
 
-      if (tuFileInfo.exists())
-      {
-         qDebug("   ... TU file exists, loading");
-         tu->loadFromFile(tuFile);
-      }
-      else
+      // if (tuFileInfo.exists())
+      // {
+      //    qDebug("   ... TU file exists, loading");
+      //    tu->loadFromFile(tuFile);
+      // }
+      // else
       {
          qDebug("   ... no TU file found, parsing & saving");
          tu->parse();
-         tu->saveToFile(tuFile);
+         // tu->saveToFile(tuFile);
       }
 
       // insert into cache last, since it takes ownership
       tuCache_.insert(tuFile, tu);
    }
 
-   tuFileInfo.refresh();
-   if (sourceFileInfo.lastModified() > tuFileInfo.lastModified())
+   // tuFileInfo.refresh();
+   // if (sourceFileInfo.lastModified() > tuFileInfo.lastModified())
    {
       qDebug("   ... src newer than TU, updating & saving");
       tuCache_[tuFile]->update();
-      tuCache_[tuFile]->saveToFile(tuFile);
+      // tuCache_[tuFile]->saveToFile(tuFile);
    }
 }
 
