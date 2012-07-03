@@ -121,7 +121,7 @@ ccs::CodeCompletionResponse CodeCompletionService::process(
           results->NumResults, timer.elapsed());
    
    ccs::CodeCompletionResponse response;
-   response.request = request;
+   response.__set_request(request);
    
    for (unsigned int i = 0; i < results->NumResults; ++i)
    {
@@ -141,7 +141,7 @@ ccs::CodeCompletionResponse CodeCompletionService::process(
          if(chunkKindIt != chunkKindMap.end())
          {
             ccs::CodeCompletionChunk ccsChunk;
-            ccsChunk.kind = chunkKindIt->second;
+            ccsChunk.__set_kind(chunkKindIt->second);
             
             {  // debug
                // std::map<int,const char*> ccs::_CodeCompletionChunkKind_VALUES_TO_NAMES::const_iterator kindNameIt;
@@ -157,10 +157,12 @@ ccs::CodeCompletionResponse CodeCompletionService::process(
             if (chunkHasText(ccsChunk.kind))
             {
                ClangString chunkText(clang_getCompletionChunkText(result.CompletionString, j));
-               ccsChunk.text = chunkText.toStdString();
+               ccsChunk.__set_text(chunkText.toStdString());
                
                chunkDebug = chunkDebug.arg(chunkText);
             }
+            
+            candidate.chunks.push_back(ccsChunk);
          }
          
          if (i < 10)

@@ -1,9 +1,13 @@
 - use TU's from headers as PCH inputs to other TU parsing
+   - not sure if this is needed, my machine is fast enough :)
 - ability to define 'projects'
+   - is this needed? maybe for listing all references of a symbol, refactoring, etc...
 - ability to define proper include directories
    - system dirs
    - project dependencies
    - just use build commands
       - clang command DB
       - some random file next to each source file
-
+- unsaved files
+   - temporary files
+- Optional chunks (can't do recursive structs in thrift...)

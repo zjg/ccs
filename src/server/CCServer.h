@@ -19,7 +19,8 @@ class I_CodeCompletionService;
 class CCServer
 {
 public:
-   explicit CCServer(I_CodeCompletionService& completionService);
+   explicit CCServer(QString versionInfo,
+                     I_CodeCompletionService& completionService);
    virtual ~CCServer();
 
 private:
@@ -27,8 +28,10 @@ private:
    {
    public:
       CCServer* server_;
+      
+      virtual void getVersionInfo(
+         std::tr1::function<void(std::string const& _return)> cob);
 
-      virtual void ping(std::tr1::function<void()> cob);
       virtual void codeCompletion(
          std::tr1::function<void(ccs::CodeCompletionResponse const& _return)> cob,
          const ccs::CodeCompletionRequest& request);
@@ -36,6 +39,7 @@ private:
 
 private:
    I_CodeCompletionService& completionService_;
+   const std::string versionInfo_;
 
    boost::shared_ptr<CCSCobHandler> asyncHandler_;
 

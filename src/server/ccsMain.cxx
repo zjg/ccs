@@ -17,15 +17,22 @@
 #include "SourceFinder.h"
 #include "TranslationUnitManager.h"
 
+const char* const ccsVersion = "0.1";
+
 int main(int argc, char* argv[])
 {
    clang_enableStackTraces();
    QCoreApplication app(argc, argv);
 
-   {  // library tests
-      ClangString version(clang_getClangVersion());
-      qDebug("[%s]", qPrintable(version));
+   QString versionInfo("[CCS %1] [%2]");
+   versionInfo = versionInfo.arg(ccsVersion);
+   
+   ClangString clangVersion(clang_getClangVersion());
+   versionInfo = versionInfo.arg(clangVersion);
+   
+   qDebug("Starting... %s", qPrintable(versionInfo));
 
+   {  // library tests
       qDebug("[inotifytools: max watches = %d, max instances = %d, max queue = %d]",
              inotifytools_get_max_user_watches(),
              inotifytools_get_max_user_instances(),
@@ -72,7 +79,7 @@ int main(int argc, char* argv[])
 
    CodeCompletionService ccService(tuManager);
 
-   CCServer server(ccService);
+   CCServer server(versionInfo, ccService);
 
    app.exec();
 

@@ -29,11 +29,10 @@ int main(int argc, char* argv[])
    socket->connectToHost("localhost", 9515);
    qDebug("connected");
    
-   
-   client->send_ping();
-   qDebug("recving ping");
-   client->recv_ping();
-   qDebug("pinged!");
+   // client->send_ping();
+   // qDebug("recving ping");
+   // client->recv_ping();
+   // qDebug("pinged!");
    
    return 0;
 }
