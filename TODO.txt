@@ -11,3 +11,6 @@
 - unsaved files
    - temporary files
 - Optional chunks (can't do recursive structs in thrift...)
+- limit number of candidates returned
+   - returning 4000+ candidates causes significant delay on my VM...
+   - should pre-sort the list somehow (priority?), then limit it
