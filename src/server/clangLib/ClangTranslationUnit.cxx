@@ -1,6 +1,10 @@
 
-#include <QTime>
 #include <QDebug>
+#include <QDir>
+#include <QFile>
+#include <QFileInfo>
+#include <QTextStream>
+#include <QTime>
 
 #include "ClangIndex.h"
 #include "ClangTranslationUnit.h"
@@ -62,6 +66,46 @@ const QStringList ClangTranslationUnit::extraClangArgs_ = QStringList()
 const unsigned ClangTranslationUnit::tuOptions_ =
    clang_defaultEditingTranslationUnitOptions()
    | CXTranslationUnit_CacheCompletionResults;
+
+ClangTranslationUnit::ClangTranslationUnit(
+   ClangIndex& index, QString srcFile)
+   : index_(index)
+   , srcFile_(srcFile)
+   , tu_(NULL)
+{
+   // get compiler flags from a file next to the source file
+   QFileInfo srcInfo(srcFile);
+   QDir srcDir = srcInfo.absoluteDir();
+   
+   QString buildFileName = QString(".%1.build_cmd").arg(srcInfo.fileName());
+   if (srcDir.exists(buildFileName))
+   {
+      QFile buildFile(srcDir.filePath(buildFileName));
+      if (buildFile.open(QIODevice::ReadOnly | QIODevice::Text))
+      {
+         QString buildCmd = QTextStream(&buildFile).readAll();
+         qDebug("build cmd for [%s]: '%s'", qPrintable(srcFile), qPrintable(buildCmd));
+         
+         foreach (QString arg, buildCmd.split(" ", QString::SkipEmptyParts))
+         {
+            clangArgsData_.append(QByteArray(qPrintable(arg)));
+         }
+      
+         for (int i = 0; i < clangArgsData_.size(); ++i)
+         {
+            clangArgs_.append(clangArgsData_[i].constData());
+         }
+      }
+      else
+      {
+         qDebug("unable to open build cmd file for [%s]", qPrintable(srcFile));
+      }
+   }
+   else
+   {
+      qDebug("unable to find build cmd file for [%s]", qPrintable(srcFile));
+   }
+}
 
 ClangTranslationUnit::ClangTranslationUnit(
    ClangIndex& index, QString srcFile, QStringList includeDirs)

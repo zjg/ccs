@@ -65,7 +65,8 @@ void TranslationUnitManager::updateTranslationUnit(QString sourceFile)
    if (!tuCache_.contains(tuFile))
    {
       ClangTranslationUnit* tu =
-         new ClangTranslationUnit(index_, sourceFile, includeDirs_);
+         new ClangTranslationUnit(index_, sourceFile);
+         // new ClangTranslationUnit(index_, sourceFile, includeDirs_);
 
       // if (tuFileInfo.exists())
       // {
@@ -85,11 +86,11 @@ void TranslationUnitManager::updateTranslationUnit(QString sourceFile)
 
    // tuFileInfo.refresh();
    // if (sourceFileInfo.lastModified() > tuFileInfo.lastModified())
-   {
-      qDebug("   ... src newer than TU, updating & saving");
-      tuCache_[tuFile]->update();
-      // tuCache_[tuFile]->saveToFile(tuFile);
-   }
+   // {
+   //    qDebug("   ... src newer than TU, updating & saving");
+   //    tuCache_[tuFile]->update();
+   //    // tuCache_[tuFile]->saveToFile(tuFile);
+   // }
 }
 
 QString TranslationUnitManager::tuFileFromSourceFile(QString sourceFile) const

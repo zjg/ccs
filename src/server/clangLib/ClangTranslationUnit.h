@@ -15,6 +15,8 @@ class ClangTranslationUnit
 {
 public:
    explicit ClangTranslationUnit(ClangIndex& index,
+                                 QString srcFile);
+   explicit ClangTranslationUnit(ClangIndex& index,
                                  QString srcFile,
                                  QStringList includeDirs);
    virtual ~ClangTranslationUnit();
