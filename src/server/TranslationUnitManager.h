@@ -14,9 +14,7 @@ class TranslationUnitManager : public QObject
    Q_OBJECT
 
 public:
-   explicit TranslationUnitManager(ClangIndex& index,
-                                   QStringList includeDirs,
-                                   QDir tuSaveDir);
+   explicit TranslationUnitManager(ClangIndex& index);
    virtual ~TranslationUnitManager();
    
    ClangTranslationUnit* translationUnit(QString sourceFile);
@@ -29,8 +27,6 @@ private:
 
 private:
    ClangIndex& index_;
-   QStringList includeDirs_;
-   QDir tuSaveDir_;
    
    QCache<QString, ClangTranslationUnit> tuCache_;
 };

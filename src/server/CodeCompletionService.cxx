@@ -265,7 +265,7 @@ ccs::CodeCompletionResponse CodeCompletionService::process(
    const ccs::CodeCompletionRequest& request)
 {
    ClangTranslationUnit* tu = tuManager_.translationUnit(request.filename.c_str());
-   if (tu == NULL)
+   if (tu == NULL || !tu->isValid())
    {
       qDebug("unable to get TU for [%s]", request.filename.c_str());
       return ccs::CodeCompletionResponse();

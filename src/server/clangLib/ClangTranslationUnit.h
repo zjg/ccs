@@ -5,6 +5,8 @@
 #include <clang-c/Index.h>
 
 #include <QByteArray>
+#include <QDateTime>
+#include <QDir>
 #include <QFileInfo>
 #include <QStringList>
 #include <QVector>
@@ -24,6 +26,9 @@ public:
    QString sourceFile() const;
    operator CXTranslationUnit() const;
 
+   bool isValid() const;
+   QDateTime lastModified() const;
+   
    void parse();
    void update();
 
@@ -34,18 +39,20 @@ private: // functions
    Q_DISABLE_COPY(ClangTranslationUnit);
 
    void disposeTu();
+   
+   void initClangArgs(const QStringList& args);
 
 private: // members
    ClangIndex& index_;
    QString srcFile_;
+   QString buildCmdWorkingDir_;
    CXTranslationUnit tu_;
+   QDateTime lastModified_;
 
    QList<QByteArray> clangArgsData_;
    QVector<const char*> clangArgs_;
 
 private: // static
-   static const QStringList defaultIncludeDirs_;
-   static const QStringList extraClangArgs_;
    static const unsigned tuOptions_;
 };
 

@@ -59,21 +59,8 @@ int main(int argc, char* argv[])
       sourceFiles = finder.findSourceFiles(".");
    }
 
-   QStringList includeDirs;
-   {  // building list of include dirs
-      foreach (QFileInfo info, sourceFiles)
-      {
-         QString dir = info.path();
-         if (!includeDirs.contains(dir))
-         {
-            // qDebug("include dir: %s", qPrintable(dir));
-            includeDirs.append(dir);
-         }
-      }
-   }
-
    FileChangeNotifier notifier(sourceFiles);
-   TranslationUnitManager tuManager(index, includeDirs, QDir(".ccsd"));
+   TranslationUnitManager tuManager(index);
    QObject::connect(&notifier, SIGNAL(fileChanged(QString)),
                     &tuManager, SLOT(updateTranslationUnit(QString)));
 

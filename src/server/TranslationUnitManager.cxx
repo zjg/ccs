@@ -5,18 +5,10 @@
 
 #include "TranslationUnitManager.h"
 
-TranslationUnitManager::TranslationUnitManager(
-   ClangIndex& index,
-   QStringList includeDirs, QDir tuSaveDir)
+TranslationUnitManager::TranslationUnitManager(ClangIndex& index)
    : index_(index)
-   , includeDirs_(includeDirs)
-   , tuSaveDir_(tuSaveDir)
    , tuCache_(15)
 {
-   if (!tuSaveDir.mkpath(tuSaveDir.absolutePath()))
-   {
-      qDebug("Unable to create TU save dir [%s]", qPrintable(tuSaveDir.absolutePath()));
-   }
 }
 
 TranslationUnitManager::~TranslationUnitManager()
@@ -25,79 +17,63 @@ TranslationUnitManager::~TranslationUnitManager()
 
 ClangTranslationUnit* TranslationUnitManager::translationUnit(QString sourceFile)
 {
-   // qDebug("cache before:");
-   // foreach (QString name, tuCache_.keys())
-   // {
-   //    qDebug("    [%s]", qPrintable(name));
-   // }
+   qDebug("cache before:");
+   foreach (QString name, tuCache_.keys())
+   {
+      qDebug("    [%s]", qPrintable(name));
+   }
 
    updateTranslationUnit(sourceFile);
    
-   // qDebug("cache after:");
-   // foreach (QString name, tuCache_.keys())
-   // {
-   //    qDebug("    [%s]", qPrintable(name));
-   // }
-
-   QString tuFile = tuFileFromSourceFile(sourceFile);
-   if (!tuCache_.contains(tuFile))
+   qDebug("cache after:");
+   foreach (QString name, tuCache_.keys())
    {
-      qDebug("cache doesn't contain TU ! [%s]", qPrintable(tuFile));
+      qDebug("    [%s]", qPrintable(name));
+   }
+
+   QFileInfo sourceFileInfo(sourceFile);
+   QString absPath = sourceFileInfo.absoluteFilePath();
+   if (!tuCache_.contains(absPath))
+   {
+      qDebug("cache doesn't contain TU ! [%s]", qPrintable(sourceFile));
       return NULL;
    }
-   return tuCache_[tuFile];
+   return tuCache_[absPath];
 }
 
 void TranslationUnitManager::updateTranslationUnit(QString sourceFile)
 {
-   qDebug("updating TU for [%s]", qPrintable(sourceFile));
-
    QFileInfo sourceFileInfo(sourceFile);
    if (!sourceFileInfo.exists())
    {
       qDebug("Source file [%s] doesn't exist", qPrintable(sourceFile));
       return;
    }
+   QString absPath = sourceFileInfo.absoluteFilePath();
 
-   QString tuFile = tuFileFromSourceFile(sourceFile);
-   // QFileInfo tuFileInfo(tuFile);
-
-   if (!tuCache_.contains(tuFile))
+   if (!tuCache_.contains(absPath))
    {
       ClangTranslationUnit* tu =
          new ClangTranslationUnit(index_, sourceFile);
-         // new ClangTranslationUnit(index_, sourceFile, includeDirs_);
+      
+      tu->parse();
 
-      // if (tuFileInfo.exists())
-      // {
-      //    qDebug("   ... TU file exists, loading");
-      //    tu->loadFromFile(tuFile);
-      // }
-      // else
+      if (tu->isValid())
       {
-         qDebug("   ... no TU file found, parsing & saving");
-         tu->parse();
-         // tu->saveToFile(tuFile);
+         // cache takes ownership of pointer
+         tuCache_.insert(absPath, tu);
       }
-
-      // insert into cache last, since it takes ownership
-      tuCache_.insert(tuFile, tu);
+      else
+      {
+         qDebug("   ... TU is not valid...");
+         delete tu;
+      }
    }
 
-   // tuFileInfo.refresh();
-   // if (sourceFileInfo.lastModified() > tuFileInfo.lastModified())
-   // {
-   //    qDebug("   ... src newer than TU, updating & saving");
-   //    tuCache_[tuFile]->update();
-   //    // tuCache_[tuFile]->saveToFile(tuFile);
-   // }
-}
-
-QString TranslationUnitManager::tuFileFromSourceFile(QString sourceFile) const
-{
-   QFileInfo sourceFileInfo(sourceFile);
-   QString relativePath = tuSaveDir_.relativeFilePath(sourceFileInfo.filePath());
-   relativePath.remove("../");
-   return QFileInfo(tuSaveDir_, relativePath + ".tu").absoluteFilePath();
+   if (sourceFileInfo.lastModified() > tuCache_[absPath]->lastModified())
+   {
+      qDebug("   ... src newer than TU, updating");
+      tuCache_[absPath]->update();
+   }
 }
 
